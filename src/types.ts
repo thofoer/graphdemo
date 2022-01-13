@@ -1,11 +1,20 @@
 import {CalcResult, calculateAllPaths, calculateShortestPath} from "./algorithms";
 
-export type GraphNode = string;
+export type NodeId = string;
+
+class GraphNode {
+  
+  constructor(public name: NodeId){}
+
+  static of(n: NodeId) {
+    return new GraphNode(n);
+  }
+};
 
 class Edge {
   constructor(
-    public n1: GraphNode,
-    public n2: GraphNode,
+    public n1: NodeId,
+    public n2: NodeId,
     public weight: number,
     public bidirectional = false
   ) {}
@@ -16,24 +25,26 @@ class Edge {
     if (matches) {
       const [,node1, dir, node2, weight] = matches;
       const  bidirectional = dir === '<->' || dir === '-';
-      return new Edge( dir==='->' ? node1 : node2, dir==='->' ? node2 : node1, +weight, bidirectional);
+      return new Edge( dir==='->' ? node1 : node2, 
+                       dir==='->' ? node2 : node1, 
+                       +weight, bidirectional);
     }
     throw new Error("Cannot parse Edge: "+s);
   }
 }
 
 class Path {
-  nodes: GraphNode[];
+  nodes: NodeId[];
   weight: number;
   _edgeIds: string[];
  
-  constructor(nodes: GraphNode[] = [], weight: number = 0) {
+  constructor(nodes: NodeId[] = [], weight: number = 0) {
     this.nodes = nodes; 
     this.weight = weight;
     this._edgeIds = [];
   }
 
-  static of(n: GraphNode) {
+  static of(n: NodeId) {
     return new Path([n], 0);
   }
 
@@ -76,10 +87,10 @@ class Path {
     }
     const nextNode = this.nextNodeForEdge(e);
     
-    return new Path([...this.nodes,nextNode], this.weight + e.weight);
+    return new Path([...this.nodes, nextNode], this.weight + e.weight);
   }
 
-  isComplete(startNode: GraphNode, targetNode: GraphNode) {
+  isComplete(startNode: NodeId, targetNode: NodeId) {
     return this.nodes[0] === startNode && this.nodes[this.nodes.length-1] === targetNode;
   }
 
@@ -92,18 +103,22 @@ class Path {
 class Graph {
 
     public edges: Edge[];
-    _nodes: GraphNode[];
+    public nodes: GraphNode[];
+    _nodeIds: NodeId[];
 
-    constructor(edges: Edge[]) {
+    constructor(edges: Edge[], nodes?: GraphNode[]) {
         this.edges = edges;
-        this._nodes = [];
+        this._nodeIds = [...new Set(this.edges.flatMap( edge => [edge.n1, edge.n2]))].sort();    
+        
+        this.nodes = nodes || this._nodeIds.map( e => GraphNode.of(e));
+        
     }
 
-    get nodes() {
-        if(this._nodes.length === 0) {
-            this._nodes = [...new Set(this.edges.flatMap( edge => [edge.n1, edge.n2]))].sort();            
+    get nodeIds() {
+        if(this._nodeIds.length === 0) {
+            this._nodeIds = [...new Set(this.edges.flatMap( edge => [edge.n1, edge.n2]))].sort();            
         }
-        return this._nodes;
+        return this._nodeIds;
     }
 
     static parse(s: string) {
@@ -116,14 +131,14 @@ class Graph {
                        .filter( e => !path.nodes.includes(path.nextNodeForEdge(e)));
     }
 
-    allPaths(startNode: GraphNode, targetNode: GraphNode): CalcResult<Path[]> {
-      return calculateAllPaths(this,startNode, targetNode );
+    allPaths(startNode: NodeId, targetNode: NodeId): CalcResult<Path[]> {
+      return calculateAllPaths(this, startNode, targetNode );
     }
 
-    shortestPath(startNode: GraphNode, targetNode: GraphNode, priorityQueueStrategy: boolean = false): CalcResult<Path> {     
-      return calculateShortestPath(this,startNode, targetNode, priorityQueueStrategy );
+    shortestPath(startNode: NodeId, targetNode: NodeId, priorityQueueStrategy: boolean = false): CalcResult<Path> {     
+      return calculateShortestPath(this, startNode, targetNode, priorityQueueStrategy );
     }
 
 }
 
-export { Edge, Path, Graph };
+export { GraphNode, Edge, Path, Graph };

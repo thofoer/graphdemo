@@ -1,4 +1,4 @@
-import { GraphNode, Graph, Path } from "./types";
+import { Graph, Path, NodeId } from "./types";
 import PriorityQueue from "ts-priority-queue";
 
 export type CalcResult<T> = {
@@ -49,8 +49,8 @@ abstract class QueueStrategy {
 
 const calculateAllPaths = (
   graph: Graph,
-  startNode: GraphNode,
-  targetNode: GraphNode
+  startNode: NodeId,
+  targetNode: NodeId
 ): CalcResult<Path[]> => {
   const paths =new PriorityQueueStrategy();
   const result: Path[] = [];
@@ -76,7 +76,7 @@ const calculateAllPaths = (
   };
 };
 
-const calculateShortestPath = (graph: Graph, startNode: GraphNode, targetNode: GraphNode, priorityQueueStrategy: boolean = false): CalcResult<Path> => {
+const calculateShortestPath = (graph: Graph, startNode: NodeId, targetNode: NodeId, priorityQueueStrategy: boolean = false): CalcResult<Path> => {
     let best: Path | undefined;
     let stepCount = 0;
    

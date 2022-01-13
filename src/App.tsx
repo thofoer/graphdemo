@@ -1,18 +1,18 @@
-import classes from "./App.module.css";
+
 import { GraphComp } from "./GraphComp";
 import { createRef,  useState } from "react";
-import { Graph, GraphNode, Path } from "./types";
+import { Graph, GraphNode, Path, NodeId } from "./types";
 import { Button, Col, Form, FormGroup, ListGroup, ListGroupItem, Row } from "react-bootstrap";
 import { useEffect } from "react";
 import { CalcResult } from './algorithms';
-import assert from "assert";
+
 
 function App() {
 
   const [graph, setGraph] = useState<Graph>();
 
-  const [startNode, setStartNode] = useState<GraphNode>();
-  const [targetNode, setTargetNode] = useState<GraphNode>();
+  const [startNode, setStartNode] = useState<NodeId>();
+  const [targetNode, setTargetNode] = useState<NodeId>();
 
   const [resultPaths, setResultPaths] = useState<CalcResult<Path[]>>();
   const [resultShortestPathSimple, setResultShortestPathSimple] = useState<CalcResult<Path>>();
@@ -58,7 +58,7 @@ function App() {
               <Form.Label>Start</Form.Label>
               <Form.Select size="sm" onChange={ event => setStartNode(event.target.selectedOptions[0].text)}>
                 <option key=""></option>
-                {graph?.nodes.map( node => <option key={node}>{node}</option>)}
+                {graph?.nodes.map( node => <option key={node.name}>{node.name}</option>)}
               </Form.Select>
              
               </FormGroup>
@@ -67,7 +67,7 @@ function App() {
               <Form.Label>Target</Form.Label>
               <Form.Select size="sm" onChange={ event => setTargetNode(event.target.selectedOptions[0].text)}>
               <option key=""></option>
-                {graph?.nodes.map( node => <option key={node}>{node}</option>)}
+                {graph?.nodes.map( node => <option key={node.name}>{node.name}</option>)}
               </Form.Select>
              
             </FormGroup>

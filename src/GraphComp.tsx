@@ -1,4 +1,4 @@
-import cytoscape, { SingularElementReturnValue } from "cytoscape";
+import cytoscape from "cytoscape";
 import React, { useCallback, useEffect, useRef } from "react";
 import classes from "./GraphComp.module.css";
 import { graphStyles } from "./graphstyles";
@@ -20,8 +20,7 @@ export const GraphComp: React.VFC<GraphProps> = ({ graph, highlightPath }) => {
     }
   };
 
-  const renderGraph = useCallback(() => {
-    console.log("RENDER GRAPH");
+  const renderGraph = useCallback(() => {    
     clear();
     if (!cyGraph.current) {
       return;
@@ -31,8 +30,8 @@ export const GraphComp: React.VFC<GraphProps> = ({ graph, highlightPath }) => {
       cyGraph.current.add({
         group: "nodes",
         data: {
-          id: node,
-          name: node,
+          id: node.name,
+          name: node.name,
         },
       });
     }
