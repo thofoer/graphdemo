@@ -115,9 +115,6 @@ class Graph {
     }
 
     get nodeIds() {
-        if(this._nodeIds.length === 0) {
-            this._nodeIds = [...new Set(this.edges.flatMap( edge => [edge.n1, edge.n2]))].sort();            
-        }
         return this._nodeIds;
     }
 
