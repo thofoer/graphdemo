@@ -24,7 +24,7 @@ export const graphStyles: cytoscape.Stylesheet[] = [
       {
         selector: '.green',
         style: {
-          'background-color': '#0F0'        
+          'background-color': '#1C9'        
         },      
       },
       {

@@ -121,7 +121,7 @@ class Graph {
     }
 
     shortestPath(startNode: GraphNode, targetNode: GraphNode, priorityQueueStrategy: boolean = false): CalcResult<Path> {     
-      return calculateShortestPath(this,startNode, targetNode );
+      return calculateShortestPath(this,startNode, targetNode, priorityQueueStrategy );
     }
 
 }
