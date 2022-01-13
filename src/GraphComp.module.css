@@ -1,0 +1,12 @@
+.graphViewWrapper {    
+    height: 100%;
+    width: 100%;
+}
+
+.graphView {
+    position: absolute;
+    background-color: #F2F2F2;
+    width: calc(100% - 100px);
+    height: calc(100% - 115px);
+    overflow: hidden;
+}

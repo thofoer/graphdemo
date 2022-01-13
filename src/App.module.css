@@ -1,0 +1,8 @@
+.App {
+ width: 100%;
+}
+
+.resultlist {
+    overflow: auto;    
+    max-height: "500px";    
+}
