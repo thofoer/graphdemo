@@ -14,7 +14,9 @@ abstract class QueueStrategy {
 
   class PriorityQueueStrategy extends QueueStrategy  {
     
-    private queue = new PriorityQueue<Path>({ comparator: function(a: Path, b: Path) { return b.compare(a) }});
+    private queue = new PriorityQueue<Path>({ comparator: function(a: Path, b: Path) { 
+      return a.compare(b);      
+    }});
 
     enqueue (p: Path) {
       this.queue.queue(p);
@@ -76,8 +78,8 @@ const calculateAllPaths = (
   };
 };
 
-const calculateShortestPath = (graph: Graph, startNode: NodeId, targetNode: NodeId, priorityQueueStrategy: boolean = false): CalcResult<Path> => {
-    let best: Path | undefined;
+const calculateShortestPath = (graph: Graph, startNode: NodeId, targetNode: NodeId, priorityQueueStrategy: boolean = false): CalcResult<Path|null> => {
+    let best: Path | null = null;
     let stepCount = 0;
    
     const queue = priorityQueueStrategy ? new PriorityQueueStrategy() : new SimpleArrayStrategy();
@@ -98,11 +100,11 @@ const calculateShortestPath = (graph: Graph, startNode: NodeId, targetNode: Node
         nextEdges.forEach( e => queue.enqueue(next.follow(e)));          
       }
     }      
-    return {data: best!, stepCount};
+    return {data: best, stepCount};
 }
 
-const calculateShortestRoundtrip = (graph: Graph, priorityQueueStrategy: boolean = false): CalcResult<Path> => {
-  let best: Path | undefined;
+const calculateShortestRoundtrip = (graph: Graph, priorityQueueStrategy: boolean = false): CalcResult<Path|null> => {
+  let best: Path | null = null;
   let stepCount = 0;
  
   const queue = priorityQueueStrategy ? new PriorityQueueStrategy() : new SimpleArrayStrategy();
@@ -113,22 +115,29 @@ const calculateShortestRoundtrip = (graph: Graph, priorityQueueStrategy: boolean
   while (queue.length>0) { 
     stepCount++;
     const next = queue.dequeue()!;
+    if (stepCount%10000===0) {
+
+      console.log(stepCount, queue.length, best);      
+    }
+    
     if (next.length === nodeCount+1) {
       if ( !best || next.weight < best.weight) {
         best = next;
       }    
     }
-    if (next.length === nodeCount && graph.isAdjacent(next.last, next.first)) {      
+    if (next.length === nodeCount ){
+      if( graph.isAdjacent(next.last, next.first)) {      
       queue.enqueue(next.follow(graph.edgeForNodes(next.last, next.first)!));
     } 
+  }
     else if (!best || next.weight<best.weight){
       const nextEdges = graph.adjacentEdgesForPath(next);          
       nextEdges.forEach( e => queue.enqueue(next.follow(e)));          
     }  
     
   }
-
-  return {data: best!, stepCount};
+  console.log("ende", best);
+  return {data: best, stepCount};
 }
 
 

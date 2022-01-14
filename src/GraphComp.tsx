@@ -7,9 +7,11 @@ import { Graph, Path } from "./types";
 interface GraphProps {
   graph: Graph;
   highlightPath?: Path;
+  defaultLayout?: string;
+  complete?: boolean;
 }
 
-export const GraphComp: React.VFC<GraphProps> = ({ graph, highlightPath }) => {
+export const GraphComp: React.VFC<GraphProps> = ({ graph, highlightPath, defaultLayout="circle", complete=false }) => {
   const graphRoot = useRef<HTMLDivElement>(null);
   const cyGraph = useRef<cytoscape.Core>();
 
@@ -29,6 +31,10 @@ export const GraphComp: React.VFC<GraphProps> = ({ graph, highlightPath }) => {
     for (let node of graph.nodes) {
       cyGraph.current.add({
         group: "nodes",
+        position: {
+          x: 120*node.x!,
+          y: -200*node.y!
+        },
         data: {
           id: node.name,
           name: node.name,
@@ -45,7 +51,7 @@ export const GraphComp: React.VFC<GraphProps> = ({ graph, highlightPath }) => {
           target: edge.n2,
         },
       });
-      if (edge.bidirectional) {
+      if (edge.bidirectional && !complete) {
         cyGraph.current.add({
           group: "edges",
           data: {
@@ -57,13 +63,18 @@ export const GraphComp: React.VFC<GraphProps> = ({ graph, highlightPath }) => {
         });
       }      
     }
+
+    if (complete) {
+      cyGraph.current.$("edge").forEach( i => { i.addClass("edgeBidirectional");});        
+    }
+
     let layout = cyGraph.current.layout({
-      name: "circle",
+      name: defaultLayout,
     });
    
      layout.run();
     
-  }, [graph]);
+  }, [graph, defaultLayout]);
 
   useEffect(() => {
     if (!cyGraph.current) {

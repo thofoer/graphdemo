@@ -5,14 +5,15 @@ export const graphStyles: cytoscape.Stylesheet[] = [
         selector: 'node',
         style: {
           'text-valign': 'center',        
-          'color': '#FFF',
+          'color': '#000',
           'label': 'data(name)',        
         },      
       },
       {
         selector: '.blue',
         style: {
-          'background-color': '#00F'        
+          'background-color': '#00F',
+          'color': '#FFF'
         },      
       },
       {
@@ -41,6 +42,12 @@ export const graphStyles: cytoscape.Stylesheet[] = [
           'text-background-color': 'lightblue',
           'text-background-padding': '2',
           'text-background-shape': 'roundrectangle'
+        }
+      },
+      {
+        selector: '.edgeBidirectional',
+        style: {
+          'target-arrow-shape': 'none'
         }
       },
       {

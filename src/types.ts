@@ -2,12 +2,28 @@ import {CalcResult, calculateAllPaths, calculateShortestPath, calculateShortestR
 
 export type NodeId = string;
 
+export type GraphDef = {
+  name: string;
+  type: "edges" | "geo"
+  data: string[];
+}
+
 class GraphNode {
   
   constructor(public name: NodeId, public x?: number, public y?: number){}
 
   static of(n: NodeId) {
     return new GraphNode(n);
+  }
+
+  static parse(s: string) {
+    const regex = /(.+),([\d.-]+),([\d.-]+)/u;
+    const matches = regex.exec(s);
+    if (matches) {
+      const [,name, lat, lng] = matches;
+      return new GraphNode(name, +lng, +lat);
+    }
+    throw new Error("Cannot parse Node: "+s);
   }
 };
 
@@ -20,7 +36,7 @@ class Edge {
   ) {}
 
   static parse(s: string): Edge {
-    const regex = /(\w+)\s*(<?->?)\s*(\w+)\s*:\s*(\d+)/;
+    const regex = /(\w+)\s*(<?->?)\s*(\w+)\s*:\s*(\d+)/u;
     const matches = regex.exec(s);
     if (matches) {
       const [,node1, dir, node2, weight] = matches;
@@ -31,6 +47,24 @@ class Edge {
     }
     throw new Error("Cannot parse Edge: "+s);
   }
+
+  static of(n1: GraphNode, n2: GraphNode) {
+    const R = 6371e3; // metres
+    const φ1 = n1.y! * Math.PI/180; // φ, λ in radians
+    const φ2 = n2.y! * Math.PI/180;
+    const Δφ = (n2.y!-n1.y!) * Math.PI/180;
+    const Δλ = (n2.x!-n1.x!) * Math.PI/180;
+
+    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+              Math.cos(φ1) * Math.cos(φ2) *
+              Math.sin(Δλ/2) * Math.sin(Δλ/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+    const d = Math.round((R * c) / 1000); // in kilometres
+
+    return new Edge(n1.name, n2.name, d, true);
+  }
+
 }
 
 class Path {
@@ -74,7 +108,15 @@ class Path {
   }
  
   compare(o: Path) { 
-       return o.weight - this.weight;  
+    //return 0;
+      let d = o.length - this.length;
+      if (d===0) {
+          d = this.weight - o.weight;
+      }
+      return d;      
+      
+       //return this.weight - o.weight;  
+      
   }
 
   isAdjacent(e: Edge) {    
@@ -122,14 +164,36 @@ class Graph {
         return this._nodeIds;
     }
 
-    static parse(s: string) {
-      const edges = s.split("\n").map( l => Edge.parse(l));
+    static of(def: GraphDef) {
+      if (def.type === "edges") {
+        return Graph.parseEdges(def.data);
+      }
+      else if (def.type === "geo") {
+        return Graph.parseGeo(def.data);
+      }
+    }
+
+    static parseGeo(s: string[]) {
+      const nodes = s.map( l => GraphNode.parse(l));
+      const edges: Edge[] = [];
+
+      for (let i=0; i<nodes.length; i++) {
+        for (let j=i+1; j<nodes.length; j++) {
+          edges.push(Edge.of(nodes[i], nodes[j]));
+        }
+      }
+
+      return new Graph(edges, nodes);
+    }
+
+    static parseEdges(s: string[]) {
+      const edges = s.map( l => Edge.parse(l));
       return new Graph(edges);
     }
 
     edgeForNodes(sourceNode: NodeId, targetNode: NodeId) {
       const res = this.edges.filter( e => (e.n1 === sourceNode && e.n2 === targetNode) 
-                                       || (e.n1 === sourceNode && e.n2 === targetNode && e.bidirectional));
+                                       || (e.n2 === sourceNode && e.n1 === targetNode && e.bidirectional));
 
       if (res.length===1){
         return res[0];
