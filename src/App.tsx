@@ -15,9 +15,12 @@ function App() {
   const [targetNode, setTargetNode] = useState<NodeId>();
 
   const [resultPaths, setResultPaths] = useState<CalcResult<Path[]>>();
-  const [resultShortestPathSimple, setResultShortestPathSimple] = useState<CalcResult<Path>>();
-  const [resultShortestPathPrio, setResultShortestPathPrio] = useState<CalcResult<Path>>();
+  const [resultShortestPathSimple, setResultShortestPathSimple] = useState<CalcResult<Path|null>>();
+  const [resultShortestPathPrio, setResultShortestPathPrio] = useState<CalcResult<Path|null>>();  
+  const [resultShortestRoundtripSimple, setResultShortestRoundtripSimple] = useState<CalcResult<Path|null>>();
+  const [resultShortestRoundtripPrio, setResultShortestRoundtripPrio] = useState<CalcResult<Path|null>>();
   
+
   const [highlightPath, setHighlightPath] = useState<Path>();
 
   const calcButton = createRef<HTMLButtonElement>();
@@ -43,6 +46,8 @@ function App() {
     setResultPaths( graph?.allPaths(startNode!, targetNode!)!);
     setResultShortestPathSimple(graph?.shortestPath(startNode!, targetNode!));
     setResultShortestPathPrio(graph?.shortestPath(startNode!, targetNode!, true));    
+    setResultShortestRoundtripSimple(graph?.shortestRoundtrip());
+    setResultShortestRoundtripPrio(graph?.shortestRoundtrip(true));    
   }
 
   return (
@@ -83,8 +88,15 @@ function App() {
                 Kürzester Pfad
               </Form.Text>
               <ListGroup className="m-2"> 
-                <ListGroupItem as="li" key="shortestSimple">SimpleStrategy {resultShortestPathSimple?.stepCount} Schritte<br/>{resultShortestPathSimple?.data.strRep()}</ListGroupItem>
-                <ListGroupItem as="li" key="shortestPrio">PrioStrategy {resultShortestPathPrio?.stepCount} Schritte<br/>{resultShortestPathPrio?.data.strRep()}</ListGroupItem>
+                <ListGroupItem as="li" key="shortestSimple">SimpleStrategy {resultShortestPathSimple?.stepCount} Schritte<br/>{resultShortestPathSimple?.data ? resultShortestPathSimple?.data.strRep() : "keine Lösung"}</ListGroupItem>
+                <ListGroupItem as="li" key="shortestPrio">PrioStrategy {resultShortestPathPrio?.stepCount} Schritte<br/>{resultShortestPathPrio?.data ? resultShortestPathPrio?.data.strRep() : "keine Lösung"}</ListGroupItem>
+              </ListGroup>
+              <Form.Text className="text-muted">
+                Kürzeste Rundreise
+              </Form.Text>
+              <ListGroup className="m-2"> 
+                <ListGroupItem as="li" key="shortestRoundtripSimple">SimpleStrategy {resultShortestRoundtripSimple?.stepCount} Schritte<br/>{resultShortestRoundtripSimple?.data ? resultShortestRoundtripSimple?.data.strRep() : "keine Lösung"}</ListGroupItem>
+                <ListGroupItem as="li" key="shortestRoundtripPrio">PrioStrategy {resultShortestRoundtripPrio?.stepCount} Schritte<br/>{resultShortestRoundtripPrio?.data ? resultShortestRoundtripPrio?.data.strRep() : "keine Lösung"}</ListGroupItem>
               </ListGroup>
               <Form.Text className="text-muted mt-5">
                 Alle Pfade (Schritte: {resultPaths.stepCount})

@@ -1,10 +1,10 @@
-import {CalcResult, calculateAllPaths, calculateShortestPath} from "./algorithms";
+import {CalcResult, calculateAllPaths, calculateShortestPath, calculateShortestRoundtrip} from "./algorithms";
 
 export type NodeId = string;
 
 class GraphNode {
   
-  constructor(public name: NodeId){}
+  constructor(public name: NodeId, public x?: number, public y?: number){}
 
   static of(n: NodeId) {
     return new GraphNode(n);
@@ -60,6 +60,10 @@ class Path {
     return this.nodes.slice(1, -1);
   }
 
+  get length() {
+    return this.nodes.length;
+  }
+
   get edgeIds() {
     if (this._edgeIds.length===0) {
       for (let i=0; i<this.nodes.length-1; i++) {
@@ -104,7 +108,7 @@ class Graph {
 
     public edges: Edge[];
     public nodes: GraphNode[];
-    _nodeIds: NodeId[];
+    private _nodeIds: NodeId[];
 
     constructor(edges: Edge[], nodes?: GraphNode[]) {
         this.edges = edges;
@@ -123,6 +127,25 @@ class Graph {
       return new Graph(edges);
     }
 
+    edgeForNodes(sourceNode: NodeId, targetNode: NodeId) {
+      const res = this.edges.filter( e => (e.n1 === sourceNode && e.n2 === targetNode) 
+                                       || (e.n1 === sourceNode && e.n2 === targetNode && e.bidirectional));
+
+      if (res.length===1){
+        return res[0];
+      }
+      else if (res.length===0) {
+        return null;
+      }
+      else {
+        throw new Error(`More than one edge found: ${sourceNode}->${targetNode}`);
+      }
+    }
+
+    isAdjacent(sourceNode: NodeId, targetNode: NodeId) {
+      return !!this.edgeForNodes(sourceNode, targetNode);
+    }
+
     adjacentEdgesForPath(path: Path) {
       return this.edges.filter( e => path.isAdjacent(e))
                        .filter( e => !path.nodes.includes(path.nextNodeForEdge(e)));
@@ -132,8 +155,12 @@ class Graph {
       return calculateAllPaths(this, startNode, targetNode );
     }
 
-    shortestPath(startNode: NodeId, targetNode: NodeId, priorityQueueStrategy: boolean = false): CalcResult<Path> {     
+    shortestPath(startNode: NodeId, targetNode: NodeId, priorityQueueStrategy: boolean = false): CalcResult<Path|null> {     
       return calculateShortestPath(this, startNode, targetNode, priorityQueueStrategy );
+    }
+
+    shortestRoundtrip(priorityQueueStrategy: boolean = false): CalcResult<Path|null> {
+      return calculateShortestRoundtrip(this, priorityQueueStrategy );
     }
 
 }
