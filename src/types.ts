@@ -108,7 +108,7 @@ class Path {
   }
  
   compare(o: Path) { 
-    //return 0;
+    // //return 0;
       let d = o.length - this.length;
       if (d===0) {
           d = this.weight - o.weight;

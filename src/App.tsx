@@ -4,7 +4,7 @@ import { createRef,  useState } from "react";
 import { Graph, Path, NodeId, GraphDef } from "./types";
 import { Button, Col, Form, FormGroup, ListGroup, ListGroupItem, ProgressBar, Row } from "react-bootstrap";
 import { useEffect } from "react";
-import { CalcResult } from './algorithms';
+import { CalcResult, calculateShortestRoundtripAsync } from './algorithms';
 
 
 
@@ -29,6 +29,7 @@ function App() {
   const [highlightPath, setHighlightPath] = useState<Path>();
 
   const calcButton = createRef<HTMLButtonElement>();
+  const stopButton = createRef<HTMLButtonElement>();
 
 
   useEffect( () => {
@@ -66,18 +67,31 @@ function App() {
   }
 
   const calcPaths = () => {   
-    
+    stopButton.current!.disabled = false;
+    const e = document.getElementById("stopFlag")! as HTMLInputElement;
+    e.value = "false";
+
     if (graphDef?.type==="edges") {
       setResultPaths( graph?.allPaths(startNode!, targetNode!)!);    
       setResultShortestPathSimple(graph?.shortestPath(startNode!, targetNode!));
       setResultShortestPathPrio(graph?.shortestPath(startNode!, targetNode!, true));    
       setResultShortestRoundtripSimple(graph?.shortestRoundtrip());
-    }    
-    setResultShortestRoundtripPrio(graph?.shortestRoundtrip(true));    
+      setResultShortestRoundtripPrio(graph?.shortestRoundtrip(true));    
+    } 
+    else {
+    
+    calculateShortestRoundtripAsync(graph!);
+    }   
+  }
+
+  const stop = () => {
+    const e = document.getElementById("stopFlag")! as HTMLInputElement;
+    e.value = "true";
   }
 
   return (
     <div className="App">
+      <input id="stopFlag" type="text" className="d-none" value="false"/>
       <Row className="mx-0">
         <Col xs={4} className="bg-white">
           <div className="h2 text-center">Wegsuche</div>
@@ -106,9 +120,14 @@ function App() {
               
             </Row>
             }
-            <Row className="m-2">
+             <FormGroup className="d-flex d-justify-center" as={Row} >
+              <Col xl={9}>
               <Button  ref={calcButton} onClick={calcPaths}>Rechnen</Button>
-            </Row>
+              </Col>
+              <Col xl={3}>
+              <Button  ref={stopButton} onClick={stop}>Abbruch</Button>
+              </Col>
+            </FormGroup>
           </Form> 
           {resultShortestRoundtripPrio  &&/* graphDef?.type==="edges" && */
             <Row>
@@ -142,30 +161,55 @@ function App() {
             }
             </Row>            
           }
-          {graphDef?.type==="geo" && false &&
-          <div>                     
-            <Form.Text className="text-muted m-3">
-                Einträge in Queue
-              </Form.Text>
-              
-              <ProgressBar  className="m-3" now={queueSize} />
-
-              <Form.Text className="text-muted m-3">
+          {graphDef?.type==="geo" &&
+          <div>       
+            <FormGroup as={Row} >
+              <Col xl={1}>
+            <Form.Label  className="text-muted m-3 d-flex align-content-center">
+                Queue
+              </Form.Label>
+              </Col><Col  xl={2}>
+              <Form.Control 
+                className="m-3 d-flex justify-left"
+                id="queueSize"
+                  as="input"
+                  readOnly
+                                  
+              />
+              </Col>
+              <Col  xl={1}>
+              <Form.Label className="text-muted m-3 d-flex  align-content-center">
                 Schritte
-              </Form.Text>
-         
+              </Form.Label>
+              </Col><Col  xl={4}>
               <Form.Control
                 className="m-3"
                 id="stepCount"
                   as="input"
                   readOnly
-                  value={45}
-                  
+                               
               />
+              </Col>
+              <Col  xl={1}>
+              <Form.Label className="text-muted m-3 d-flex  align-content-center">
+                Zeit
+              </Form.Label>
+              </Col><Col  xl={3}>
+              <Form.Control
+                className="m-3"
+                id="time"
+                  as="input"
+                  readOnly
+                                  
+              />
+              </Col>
+              </FormGroup>              
+              
 
           <Form.Control
             className="m-3"
               as="textarea"
+              id="log"
               readOnly
               style={{ height: '500px' }}
           />
