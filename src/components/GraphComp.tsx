@@ -1,21 +1,19 @@
 import cytoscape from "cytoscape";
 import React, { useCallback, useEffect, useRef } from "react";
 import classes from "./GraphComp.module.css";
+import { Graph, Path } from '../types';
 import { graphStyles } from "./graphstyles";
-import { Graph, Path } from "./types";
 
 interface GraphProps {
     graph: Graph;
     highlightPath?: Path;
-    defaultLayout?: string;
-    complete?: boolean;
+    defaultLayout?: string;    
 }
 
 export const GraphComp: React.VFC<GraphProps> = ({
     graph,
     highlightPath,
-    defaultLayout = "circle",
-    complete = false,
+    defaultLayout = "circle",    
 }) => {
     const graphRoot = useRef<HTMLDivElement>(null);
     const cyGraph = useRef<cytoscape.Core>();
@@ -56,7 +54,7 @@ export const GraphComp: React.VFC<GraphProps> = ({
                     target: edge.n2,
                 },
             });
-            if (edge.bidirectional && !complete) {
+            if (edge.bidirectional && !graph.complete) {
                 cyGraph.current.add({
                     group: "edges",
                     data: {
@@ -69,7 +67,7 @@ export const GraphComp: React.VFC<GraphProps> = ({
             }
         }
 
-        if (complete) {
+        if (graph.complete) {
             cyGraph.current.$("edge").forEach((i) => {
                 i.addClass("edgeBidirectional");
             });

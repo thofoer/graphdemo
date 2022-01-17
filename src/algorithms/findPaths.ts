@@ -14,7 +14,7 @@ const findAllPaths = (
     paths.enqueue(Path.of(startNode));
 
     const startTime = Date.now();
-
+    
     while (paths.length > 0) {
         stepCount++;
         const next = paths.dequeue()!;

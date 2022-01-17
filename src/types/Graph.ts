@@ -1,16 +1,52 @@
 import { CalcResult } from "./CalcResult";
-import { GraphNode, Edge, NodeId, Path, GraphDef } from ".";
+import { GraphNode, Edge, NodeId, Path, GraphDef, RandomGraphDef } from ".";
 import { findAllPaths, findShortestPath } from "../algorithms/findPaths";
+import { Random } from "../algorithms/utils";
 import { QueueStrategy } from "../algorithms/queueStrategies";
 import { findShortestRoundtrip } from "../algorithms/roundtrip";
+
+
+const createRandomGraph = (def: RandomGraphDef) => {
+    
+    const NODE_NAMES = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwx";
+
+    const nodes: GraphNode[] = Array(def.nodeCount).fill(null).map( (_,i) => new GraphNode(NODE_NAMES.at(i)!));
+    const edges: Edge[] = [];
+
+    const random = Random(def.name);
+
+
+    nodes.forEach( node => {
+        const edgeNodes: string[] = [];
+        for (let i=0; i<def.edgesPerNode; i++) {
+            let n = "";
+            do {
+                n = NODE_NAMES.at(random(0,def.nodeCount))!;
+            }
+            while (n === node.name || edgeNodes.includes(n));
+            edgeNodes.push(n);
+        }
+        edgeNodes.forEach( n => {
+            edges.push( new Edge(node.name, n, random(0, 100), def.bidirectional ));
+        });        
+    });
+    
+    return new Graph(edges, nodes);
+}
 
 export class Graph {
     public edges: Edge[];
     public nodes: GraphNode[];
     private _nodeIds: NodeId[];
+    public complete: boolean;
+    public bidirectional: boolean;
 
-    constructor(edges: Edge[], nodes?: GraphNode[]) {
+
+    constructor(edges: Edge[], nodes?: GraphNode[], complete: boolean = false, bidirectional: boolean = false) {
         this.edges = edges;
+        this.complete = complete;
+        this.bidirectional = bidirectional;
+
         this._nodeIds = [...new Set(this.edges.flatMap((edge) => [edge.n1, edge.n2]))].sort();
 
         this.nodes = nodes || this._nodeIds.map((e) => GraphNode.of(e));
@@ -21,10 +57,10 @@ export class Graph {
     }
 
     static of(def: GraphDef) {
-        if (def.type === "edges") {
-            return Graph.parseEdges(def.data);
-        } else if (def.type === "geo") {
-            return Graph.parseGeo(def.data);
+        switch(def.type) {
+            case "edges" : return Graph.parseEdges(def.data!);
+            case "geo": return Graph.parseGeo(def.data!);
+            case "random": return createRandomGraph(def);
         }
     }
 
@@ -38,7 +74,7 @@ export class Graph {
             }
         }
 
-        return new Graph(edges, nodes);
+        return new Graph(edges, nodes, true, true);
     }
 
     static parseEdges(s: string[]) {

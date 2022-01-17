@@ -1,10 +1,22 @@
 export type NodeId = string;
 
-export type GraphDef = {
+
+export type PredefinedGraphDef = {
   name: string;
-  type: "edges" | "geo"
-  data: string[];
+  type: "edges" | "geo";
+  data: string[];    
 }
+
+export type RandomGraphDef = {
+  name: string;
+  type: "random";  
+  nodeCount: number;
+  edgesPerNode: number;  
+  complete: boolean;
+  bidirectional: boolean;
+}
+
+export type GraphDef = PredefinedGraphDef | RandomGraphDef;
 
 export class GraphNode {
   

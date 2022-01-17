@@ -4,6 +4,8 @@ export const graphStyles: cytoscape.Stylesheet[] = [
     {
         selector: 'node',
         style: {
+          'width': 60,
+          'height': 60,
           'text-valign': 'center',        
           'color': '#000',
           'label': 'data(name)',        

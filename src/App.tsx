@@ -1,10 +1,10 @@
-import { GraphComp } from "./GraphComp";
+import { GraphComp } from "./components/GraphComp";
 import { createRef, useState } from "react";
 import { Graph, Path, NodeId, GraphDef, CalcResult } from "./types";
 import { Button, Col, Form, FormGroup, ListGroup, ListGroupItem, Row } from "react-bootstrap";
 import { useEffect } from "react";
 import { findShortestRoundtripAsync } from "./algorithms/roundtrip";
-
+import { GraphDefinition } from './components/GraphDefinition/GraphDefinition';
 function App() {
     const [graphDefs, setGraphDefs] = useState<GraphDef[]>();
     const [graphDef, setGraphDef] = useState<GraphDef>();
@@ -37,14 +37,6 @@ function App() {
         loadGraphDefs();
     }, [graphDefs]);
 
-    const loadGraph = () => {
-        console.log(graphDef);
-        if (graphDef) {
-            setGraph(Graph.of(graphDef));
-            console.log(graph);
-        }
-    };
-
     useEffect(() => {
         if (calcButton.current) {
             calcButton.current.disabled =
@@ -73,9 +65,10 @@ function App() {
         e.value = "true";
     };
 
-    return (
+    console.log("APP REMDER");
+    return (      
         <div className="App">
-            <input id="stopFlag" type="text" className="d-none" value="false" />
+            <input id="stopFlag" type="text" className="d-none" value="false" readOnly/>
             <Row className="mx-0">
                 <Col xs={4} className="bg-white">
                     <div className="h2 text-center">Wegsuche</div>
@@ -225,30 +218,15 @@ function App() {
                     {graph ? (
                         <GraphComp
                             graph={graph}
-                            highlightPath={highlightPath}
-                            complete={graphDef?.type === "geo"}
-                            defaultLayout={graphDef?.type === "geo" ? "preset" : "circle"}
+                            highlightPath={highlightPath}                            
+                            defaultLayout={graph.complete ? "preset" : "circle"}
                         />
-                    ) : (
-                        <div className="d-flex align-items-center">
-                            <Form>
-                                <Row className="mb-3">
-                                    <FormGroup as={Col} style={{ width: "500px" }}>
-                                        <Form.Select
-                                            size="sm"
-                                            onChange={(event) => setGraphDef(graphDefs![event.target.selectedIndex])}
-                                        >
-                                            {graphDefs?.map((g) => (
-                                                <option key={g.name}>{g.name}</option>
-                                            ))}
-                                        </Form.Select>
-                                    </FormGroup>
-                                    <FormGroup as={Col}>
-                                        <Button onClick={loadGraph}>Lade Graph</Button>
-                                    </FormGroup>
-                                </Row>
-                            </Form>
-                        </div>
+                    ) : (                      
+                       <>
+                       { graphDefs && 
+                        <GraphDefinition graphDefs={graphDefs} onSetGraph={(graph)=>setGraph(graph)}/>
+                       }
+                       </>
                     )}
                 </Col>
             </Row>
