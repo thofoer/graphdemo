@@ -27,7 +27,7 @@ const createRandomGraph = (def: RandomGraphDef) => {
             edgeNodes.push(n);
         }
         edgeNodes.forEach( n => {
-            edges.push( new Edge(node.name, n, random(0, 100), def.bidirectional ));
+            edges.push( new Edge(node.name, n, random(1, 100), def.bidirectional ));
         });        
     });
     

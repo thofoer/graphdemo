@@ -80,7 +80,7 @@ export const GraphDefinition: React.VFC<GraphDefinitionProps> = ({
 }
 
   return (
-    <Form className="mt-5" style={{ width: "50%" }}>
+    <Form className="mt-5" >
       <Row className="mb-3">
         <FormGroup as={Col}>
           <Form.Select

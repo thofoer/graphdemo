@@ -1,0 +1,17 @@
+.navItem {
+    min-width: 10rem;
+    min-height: 2rem;
+    border: 1px solid darkgrey;
+    padding: 0.5em;
+    margin: 0 10px;
+    font-size: 1.8rem;
+    
+    :link {
+        text-decoration: none;
+    }
+
+    :hover {        
+        background-color: lightgrey;
+    }
+}
+

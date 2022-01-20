@@ -1,7 +1,7 @@
 import cytoscape from "cytoscape";
 import React, { useCallback, useEffect, useRef } from "react";
-import classes from "./GraphComp.module.css";
-import { Graph, Path } from '../types';
+import classes from "./GraphComp.module.scss";
+import { Graph, Path } from '../../types';
 import { graphStyles } from "./graphstyles";
 
 interface GraphProps {
@@ -14,7 +14,7 @@ export const GraphComp: React.VFC<GraphProps> = ({
     graph,
     highlightPath,
     defaultLayout = "circle",    
-}) => {
+}) => { 
     const graphRoot = useRef<HTMLDivElement>(null);
     const cyGraph = useRef<cytoscape.Core>();
 
@@ -119,8 +119,11 @@ export const GraphComp: React.VFC<GraphProps> = ({
     }, [highlightPath]);
 
     return (
+        
         <div className={classes.graphViewWrapper}>
+            Anzahl Knoten: {graph.nodes.length} Anzahl Kanten: {graph.edges.length}
             <div id="graphroot" className={classes.graphView} ref={graphRoot} />
         </div>
+        
     );
 };
