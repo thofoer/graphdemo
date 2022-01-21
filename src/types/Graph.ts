@@ -1,9 +1,6 @@
-import { CalcResult } from "./CalcResult";
 import { GraphNode, Edge, NodeId, Path, GraphDef, RandomGraphDef } from ".";
-import { findAllPaths, findShortestPath } from "../algorithms/findPaths";
 import { Random } from "../algorithms/utils";
-import { QueueStrategy } from "../algorithms/queueStrategies";
-import { findShortestRoundtrip } from "../algorithms/roundtrip";
+
 
 
 const createRandomGraph = (def: RandomGraphDef) => {
@@ -107,24 +104,4 @@ export class Graph {
             .filter((e) => path.isAdjacent(e))
             .filter((e) => !path.nodes.includes(path.nextNodeForEdge(e)));
     }
-    
-    allPaths(
-        startNode: NodeId,
-        targetNode: NodeId,
-        queueStrategy: QueueStrategy = "priorityWeight"
-    ): CalcResult<Path[]> {
-        return findAllPaths(this, startNode, targetNode, queueStrategy);
-    }
-
-    shortestPath(
-        startNode: NodeId,
-        targetNode: NodeId,
-        queueStrategy: QueueStrategy = "priorityWeight"
-    ): CalcResult<Path | null> {
-        return findShortestPath(this, startNode, targetNode, queueStrategy);
-    }
-
-    shortestRoundtrip(queueStrategy: QueueStrategy = "priorityLengthAndWeight"): CalcResult<Path | null> {
-        return findShortestRoundtrip(this, queueStrategy);
-    }
-}
+}  

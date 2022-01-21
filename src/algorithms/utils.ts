@@ -17,4 +17,18 @@ const Random = (seed: string) => {
 
 }
 
-export { Random };
+const format = new Intl.NumberFormat("de-DE");
+
+function formatNumber(s: number): string {
+    return s<1000 ? s.toString() : format.format(s).replaceAll(".", "\u2009");
+}
+
+function formatTime(millis: number): string {
+    const thousandths = (millis % 1000).toString().padStart(3, "0");
+    const secs = ((Math.floor(millis / 1000)) % 60).toString().padStart(2, "0");
+    const mins = Math.floor(millis / 60000).toString();
+    return `${mins}:${secs},${thousandths}`;
+}
+
+
+export { Random, formatNumber, formatTime };

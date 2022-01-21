@@ -1,5 +1,5 @@
 import { GraphComp } from "./components/GraphComp/GraphComp";
-import { createRef, useState } from "react";
+import React, { createRef, useRef, useState } from "react";
 import { Graph, Path, NodeId, GraphDef, CalcResult } from "./types";
 import {
   Button,
@@ -20,19 +20,32 @@ import "allotment/dist/style.css";
 import { Allotment } from "allotment";
 import { GraphDefinitionModal } from "./components/GraphDefinition/GraphDefinitionModal";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { graphSelector } from "./store/graphSlice";
+
+export const LogContext = React.createContext<(s: string)=>void>(()=>{});
 
 function App() {
-  const [graphDefs, setGraphDefs] = useState<GraphDef[]>([]);
-  const [graphDef, setGraphDef] = useState<GraphDef>();
-  const [graph, setGraph] = useState<Graph>();
+
+  const graph = useSelector(graphSelector).graph;
+
+  const [viewWidth, setViewWidth] = useState(document.querySelector("body")?.offsetWidth ?? 1800);
+  const [viewHeight, setViewHeight] = useState(document.querySelector("body")?.offsetHeight ?? 1200);
+
+  const [graphDefs, setGraphDefs] = useState<GraphDef[]>([]);  
+  
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [highlightPath, setHighlightPath] = useState<Path>();
 
-  const handleSetGraph = (g: Graph) => {
-    console.log(g);
-    setModalOpen(false);
-    setGraph(g);
-  };
+  const logArea = useRef<HTMLTextAreaElement>(null);
+
+  
+
+  useEffect( () => {
+    const body = document.querySelector("body");
+    setViewHeight(body?.offsetHeight ?? 0);
+    setViewWidth(body?.offsetWidth ?? 0);
+  });
 
   useEffect(() => {
     const loadGraphDefs = async () => {      
@@ -40,43 +53,54 @@ function App() {
             const response = await fetch("graph.json");
             const graphDefs = await response.json();
             console.dir(graphDefs);
-            setGraphDefs(graphDefs as GraphDef[]);
-            setGraphDef(graphDefs[0]);
-            console.log("graphdefs", graphDefs);
+            setGraphDefs(graphDefs as GraphDef[]);            
+            log(`Es wurden ${graphDefs.length} Graphdefinitionen geladen.`);
         }
     };    
     loadGraphDefs();
-}, [graphDefs]);
+  }, [graphDefs]);
+
+  const log = (s: string) => {    
+    if (logArea.current) {
+      logArea.current.value! += s + "\n";
+      logArea.current.scrollTop = logArea.current.scrollHeight;
+    }
+  }
+
   
   
-  console.log("APP RENDER");
+  console.log("APP RENDER", logArea);
 
 
   return (
-    <div style={{ width: "2800px", height: "2000px" }}>
+    <div style={{ width: viewWidth, height: viewHeight }}>
       <GraphDefinitionModal
         modalOpen={modalOpen}
         hideModal={() => {
           setModalOpen(false);
         }}
-        graphDefs={graphDefs}
-        onSetGraph={handleSetGraph}
-      />
+        graphDefs={graphDefs}       
+      />      
 
-      <Allotment defaultSizes={[600, 1200]}>
+      <Allotment defaultSizes={[viewWidth*0.3, viewWidth*0.7]}>
         <Allotment.Pane minSize={200}>
-          <div className={classes.App}>
-            <SideBar setGraphDefModalOpen={() => setModalOpen(true)}/>
-          </div>
+          <LogContext.Provider value={log}>
+            <div className={classes.App}>
+              <SideBar setGraphDefModalOpen={() => setModalOpen(true)}/>
+            </div>
+          </LogContext.Provider>
         </Allotment.Pane>
-        <Allotment.Pane snap>
-          
+        <Allotment.Pane snap>     
+         <Allotment vertical defaultSizes={[viewHeight*0.7, viewHeight*0.3]}>
+         <Allotment.Pane>   
         {graph ? (
+          <div>
                     <GraphComp
                         graph={graph}
                         highlightPath={highlightPath}                            
                         defaultLayout={graph.complete ? "preset" : "circle"}
-                    />
+                    />                  
+            </div>
                 ) : (                      
                     <>
                     { graphDefs && 
@@ -88,11 +112,17 @@ function App() {
                     }
                     </>
                 )}
-
+                 </Allotment.Pane>   
+                 <Allotment.Pane>
+                  <Form.Control ref={logArea} className="m-0" as="textarea" id="log" readOnly style={{height: "100%"}} />
+                </Allotment.Pane>
+              </Allotment>  
         </Allotment.Pane>
       </Allotment>
+      
     </div>
   );
 }
 
 export default App;
+

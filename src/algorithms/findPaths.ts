@@ -1,37 +1,66 @@
 import { Graph, Path, CalcResult, NodeId } from "../types";
 import { PathQueue, QueueStrategy } from "./queueStrategies";
+import { FRAME_MILLIS, ReportResultCallback, ReportStatusCallback } from '.';
+
 
 const findAllPaths = (
     graph: Graph,
     startNode: NodeId,
     targetNode: NodeId,
-    queueStrategy: QueueStrategy
-): CalcResult<Path[]> => {
+    queueStrategy: QueueStrategy,
+    onReportStatus: ReportStatusCallback,
+    onReportResult: ReportResultCallback<Path[]>,
+) => {
     const paths = PathQueue.of(queueStrategy);
     const result: Path[] = [];
 
+    let cancelled = false;
     let stepCount = 0;
+
     paths.enqueue(Path.of(startNode));
 
     const startTime = Date.now();
-    
-    while (paths.length > 0) {
-        stepCount++;
-        const next = paths.dequeue()!;
+    let lastFrame = startTime;
+    console.log("findAllPaths");
 
-        if (next.isComplete(startNode, targetNode)) {
-            result.push(next);
-        } else {
-            const nextEdges = graph.adjacentEdgesForPath(next);
-            nextEdges.forEach((e) => paths.enqueue(next.follow(e)));
+    const iter = () => {
+        
+        let running = true;
+
+        while (running && !cancelled && paths.length > 0) {
+            stepCount++;
+            const next = paths.dequeue()!;
+
+            if (next.isComplete(startNode, targetNode)) {
+                result.push(next);
+            } else {
+                const nextEdges = graph.adjacentEdgesForPath(next);
+                nextEdges.forEach((e) => paths.enqueue(next.follow(e)));
+            }
+
+            const now = Date.now();
+            if (now - lastFrame > FRAME_MILLIS || cancelled || paths.length === 0) {
+                running = false;
+                lastFrame = now;
+                const millis = now - startTime;                
+                onReportStatus(stepCount, paths.length, millis);                
+            }
+        }
+        if (paths.length > 0 && !cancelled ) {
+            window.requestAnimationFrame(iter);
+        }
+        if (paths.length===0) {
+            const elapsedMillis = Date.now()-startTime;
+            onReportResult(result, elapsedMillis);
+            onReportStatus(stepCount, paths.length, elapsedMillis);         
         }
     }
 
-    return {
-        stepCount,
-        data: result,
-        timeInMillis: Date.now() - startTime,
-    };
+    const cancelCallback = () => {
+        cancelled = true;
+    }
+    window.requestAnimationFrame(iter);
+    return cancelCallback;
 };
 
 const findShortestPath = (
@@ -67,4 +96,4 @@ const findShortestPath = (
     };
 };
 
-export { findAllPaths, findShortestPath};
+export { findAllPaths, findShortestPath };

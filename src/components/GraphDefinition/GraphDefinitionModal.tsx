@@ -1,25 +1,33 @@
 import { Button, Modal } from "react-bootstrap";
-import { Graph, GraphDef} from '../../types';
+import { useDispatch } from "react-redux";
+import { Graph, GraphDef } from '../../types';
+import { setGraph } from '../../store/graphSlice';
 import {GraphDefinition } from './GraphDefinition';
 
 interface OwnProps {  
   modalOpen: boolean;
   hideModal: () => void;
   graphDefs: GraphDef[];
-  onSetGraph: (graph: Graph) => void;
 }
 
 export const GraphDefinitionModal: React.FunctionComponent<OwnProps> = (
-  props
+  { modalOpen, hideModal, graphDefs }
 ) => {
-  const { modalOpen, hideModal, onSetGraph, graphDefs } = props;
+
+  const dispatch = useDispatch();
+
+  const handleSetGraph = (graph: Graph) => {
+    dispatch(setGraph(graph));
+    hideModal();
+  }
+
   return (
     <Modal size="lg" show={modalOpen} onHide={hideModal}>
       <Modal.Header closeButton>
         <Modal.Title>Graph definieren</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-          <GraphDefinition onSetGraph={onSetGraph} graphDefs={graphDefs}/>
+          <GraphDefinition onSetGraph={handleSetGraph} graphDefs={graphDefs}/>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={hideModal}>
