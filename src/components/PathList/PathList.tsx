@@ -29,8 +29,7 @@ export const PathList: FC<OwnProps> = ({paths}) => {
                         action
                     >
                         <i>{paths.length-20} weitere...</i>
-                    </ListGroupItem>
-                        
+                    </ListGroupItem>                        
                 }
             </ListGroup>
             </Card.Body>
