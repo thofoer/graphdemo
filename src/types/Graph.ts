@@ -1,5 +1,6 @@
 import { GraphNode, Edge, NodeId, Path, GraphDef, RandomGraphDef } from ".";
 import { Random } from "../algorithms/utils";
+import { PredefinedGraphDef } from "./GraphNode";
 
 
 
@@ -28,25 +29,41 @@ const createRandomGraph = (def: RandomGraphDef) => {
         });        
     });
     
-    return new Graph(edges, nodes);
+    return new Graph(edges, false, false, "none", nodes);
 }
+
+export type Positioning = "absolute" | "geo" | "none";
 
 export class Graph {
     public edges: Edge[];
-    public nodes: GraphNode[];
-    private _nodeIds: NodeId[];
+    public nodes: GraphNode[];    
     public complete: boolean;
     public bidirectional: boolean;
+    public positioning: Positioning;
 
-
-    constructor(edges: Edge[], nodes?: GraphNode[], complete: boolean = false, bidirectional: boolean = false) {
+    private _nodeIds: NodeId[];
+    private _adjacencyMap: Map<NodeId, {node: NodeId, weight: number}[]>;
+    
+    constructor(edges: Edge[], complete: boolean, bidirectional: boolean, positioning: Positioning, nodes?: GraphNode[]) {
         this.edges = edges;
         this.complete = complete;
         this.bidirectional = bidirectional;
+        this.positioning = positioning;
 
         this._nodeIds = [...new Set(this.edges.flatMap((edge) => [edge.n1, edge.n2]))].sort();
 
         this.nodes = nodes || this._nodeIds.map((e) => GraphNode.of(e));
+
+        this._adjacencyMap = new Map();
+        
+        this._nodeIds.forEach( nodeId => { this._adjacencyMap.set(nodeId, [])});
+
+        this.edges.forEach( edge => {
+            this._adjacencyMap.get(edge.n1)!.push({node: edge.n2, weight: edge.weight});            
+            if (bidirectional) {                
+                this._adjacencyMap.get(edge.n2)!.push({node: edge.n1, weight: edge.weight});
+            }
+        });
     }
 
     get nodeIds() {
@@ -58,6 +75,7 @@ export class Graph {
             case "edges" : return Graph.parseEdges(def.data!);
             case "geo": return Graph.parseGeo(def.data!);
             case "random": return createRandomGraph(def);
+            case "adjacency-undirected": return Graph.parseAdjacency(def, true);
         }
     }
 
@@ -71,12 +89,48 @@ export class Graph {
             }
         }
 
-        return new Graph(edges, nodes, true, true);
+        return new Graph(edges, true, true, "geo", nodes);    
     }
+
+    static parseAdjacency(def: PredefinedGraphDef, undirected: boolean) {
+        const edges: Edge[] = [];
+
+
+        const regex = /(.+):(?:\s+(.+,[\d.-]+))+/u;
+        const nodeRegex = /(.+),(\d+)/u;
+        def.data.forEach( l => {
+            const matches = regex.exec(l);
+            if (matches) {
+                const [,node, adj] = matches;    
+                adj.split(" ").forEach( next => {
+                    const nodeMatches = nodeRegex.exec(next);
+                    if (nodeMatches) {
+                        const [,n2, weight] = nodeMatches;    
+                        edges.push( new Edge(node, n2, +weight, undirected))
+                    }
+                });
+            }
+        });
+        if (def.nodeCoordinates) {
+            const nodes: GraphNode[] = [];
+            const regex = /(.+)\[([\d-]+),([\d-]+)\]/u;
+
+            def.nodeCoordinates.forEach( n => {                
+                const matches = regex.exec(n);
+                if (matches) {
+                    const [, name, x, y] = matches;
+                    nodes.push( new GraphNode(name, +x, +y));
+                }
+            })
+            return new Graph(edges, false, true, "absolute", nodes);
+        }
+        return new Graph(edges, false, true, "none");
+    }
+
 
     static parseEdges(s: string[]) {
         const edges = s.map((l) => Edge.parse(l));
-        return new Graph(edges);
+        return new Graph(edges, false, false, "none");
     }
 
     edgeForNodes(sourceNode: NodeId, targetNode: NodeId) {
@@ -103,5 +157,12 @@ export class Graph {
         return this.edges
             .filter((e) => path.isAdjacent(e))
             .filter((e) => !path.nodes.includes(path.nextNodeForEdge(e)));
+    }
+
+    adjacentNodesForNode(node: NodeId): NodeId[] {
+        if (!this._adjacencyMap.get(node)) {
+            throw new Error("unknown node: "+node);
+        }        
+        return this._adjacencyMap.get(node)!.map( e => e.node);        
     }
 }  

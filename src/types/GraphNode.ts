@@ -3,8 +3,9 @@ export type NodeId = string;
 
 export type PredefinedGraphDef = {
   name: string;
-  type: "edges" | "geo";
+  type: "edges" | "geo" | "adjacency-undirected";
   data: string[];    
+  nodeCoordinates?: string[];
 }
 
 export type RandomGraphDef = {

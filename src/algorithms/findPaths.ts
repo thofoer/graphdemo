@@ -20,8 +20,7 @@ const findAllPaths = (
     paths.enqueue(Path.of(startNode));
 
     const startTime = Date.now();
-    let lastFrame = startTime;
-    console.log("findAllPaths");
+    let lastFrame = startTime;    
 
     const iter = () => {
         
@@ -51,7 +50,7 @@ const findAllPaths = (
         }
         if (paths.length===0) {
             const elapsedMillis = Date.now()-startTime;
-            onReportResult(result, elapsedMillis);
+            onReportResult(result, stepCount, elapsedMillis);
             onReportStatus(stepCount, paths.length, elapsedMillis);         
         }
     }
@@ -75,7 +74,7 @@ const findShortestPath = (
     const queue = PathQueue.of(queueStrategy);
 
     queue.enqueue(Path.of(startNode));
-
+    const startTime = Date.now();
     while (queue.length > 0) {
         stepCount++;
         const next = queue.dequeue()!;
@@ -93,6 +92,7 @@ const findShortestPath = (
     return {
         data: best,
         stepCount,
+        timeInMillis: Date.now() - startTime
     };
 };
 

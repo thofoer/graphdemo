@@ -1,12 +1,14 @@
 import cytoscape from "cytoscape";
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useContext, useEffect, useRef } from "react";
 import classes from "./GraphComp.module.scss";
 import { Graph, Path } from '../../types';
+import { dfs } from '../../algorithms';
 import { graphStyles } from "./graphstyles";
+import { LogContext } from "../../App";
 
 interface GraphProps {
     graph: Graph;
-    highlightPath?: Path;
+    highlightPath: Path | null;
     defaultLayout?: string;    
 }
 
@@ -17,6 +19,27 @@ export const GraphComp: React.VFC<GraphProps> = ({
 }) => { 
     const graphRoot = useRef<HTMLDivElement>(null);
     const cyGraph = useRef<cytoscape.Core>();
+
+    const log = useContext(LogContext);
+
+    const dumpGraph = () => {
+        log("----Graph-Dump-------------")
+        graph.nodeIds.forEach( node => {
+            log(`${node} 🠖 ${graph.adjacentNodesForNode(node).join(", ")}`);
+        });
+        log("   Koordinaten ");
+        if (cyGraph.current) {
+            cyGraph.current.$("node").forEach( n => {
+                const {x,y} = n.position();
+                log(`${n.id()}[${Math.floor(x)},${Math.floor(y)}]`);
+            });
+        }
+    }
+
+    const test = () => {
+        log("----DFS-------------");
+        dfs(graph, "A", (node: string) => log(node));
+    };
 
     const clear = () => {
         if (cyGraph.current) {
@@ -31,12 +54,19 @@ export const GraphComp: React.VFC<GraphProps> = ({
             return;
         }
 
+        let fx = 1;
+        let fy = 1;
+        if (graph.positioning==="geo") {
+            fx = 120;
+            fy = -200;
+        }
+
         for (let node of graph.nodes) {
             cyGraph.current.add({
                 group: "nodes",
                 position: {
-                    x: 120 * node.x!,
-                    y: -200 * node.y!,
+                    x: fx * node.x!,
+                    y: fy * node.y!,
                 },
                 data: {
                     id: node.name,
@@ -54,7 +84,7 @@ export const GraphComp: React.VFC<GraphProps> = ({
                     target: edge.n2,
                 },
             });
-            if (edge.bidirectional && !graph.complete) {
+            if (edge.bidirectional && !graph.bidirectional) {
                 cyGraph.current.add({
                     group: "edges",
                     data: {
@@ -67,7 +97,7 @@ export const GraphComp: React.VFC<GraphProps> = ({
             }
         }
 
-        if (graph.complete) {
+        if ( graph.bidirectional) {
             cyGraph.current.$("edge").forEach((i) => {
                 i.addClass("edgeBidirectional");
             });
@@ -95,14 +125,16 @@ export const GraphComp: React.VFC<GraphProps> = ({
     }, [graph, renderGraph]);
 
     useEffect(() => {
-        if (highlightPath && cyGraph.current) {
+        if (cyGraph.current) {
             cyGraph.current.$("node").forEach((i) => {
                 i.removeClass("red blue green");
             });
             cyGraph.current.$("edge").forEach((i) => {
                 i.removeClass("edgeHighlight");
             });
+        }
 
+        if (highlightPath && cyGraph.current) {           
             cyGraph.current.$(`node[id="${highlightPath.first}"]`).addClass("red");
             cyGraph.current.$(`node[id="${highlightPath.last}"]`).addClass("green");
 
@@ -121,6 +153,9 @@ export const GraphComp: React.VFC<GraphProps> = ({
     return (
         
         <div className={classes.graphViewWrapper}>
+            <button className={classes.button} onClick={()=>log("CLEAR")}>C</button>
+            <button className={classes.button} onClick={dumpGraph}>D</button>
+            <button className={classes.button} onClick={test}>T</button>
             Anzahl Knoten: {graph.nodes.length} Anzahl Kanten: {graph.edges.length}
             <div id="graphroot" className={classes.graphView} ref={graphRoot} />
         </div>
