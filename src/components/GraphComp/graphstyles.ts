@@ -62,9 +62,23 @@ export const graphStyles: cytoscape.Stylesheet[] = [
           selector: '.edgeHighlight',
           style: {
             'width': 5,
-            'line-color': '#00F',
-            'target-arrow-color': '#00F',
+            'line-color': '#77B',
+            'target-arrow-color': '#77B',
+            'font-size': 22,            
+            'text-background-color': '#77B',
+            'color': 'white',
+            'text-background-padding': '3',
           }
-      }
+      },
+      {
+        selector: '.edgeFaded',
+        style: {
+          'width': 1,
+          'line-color': '#999',
+          'target-arrow-color': '#999',
+          'label': '',
+          'text-background-opacity': 0,
+        }
+    }
 
 ];

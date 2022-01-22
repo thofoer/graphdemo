@@ -34,7 +34,12 @@ export class Path {
     get edgeIds() {
       if (this._edgeIds.length===0) {
         for (let i=0; i<this.nodes.length-1; i++) {
-          this._edgeIds.push(`${this.nodes[i]}->${this.nodes[i+1]}`);
+          let n1 = this.nodes[i];
+          let n2 = this.nodes[i+1];
+          if (n1>n2) {
+            [n1, n2] = [n2, n1];
+          }
+          this._edgeIds.push(`${n1}->${n2}`);
         }
       }
       return this._edgeIds;

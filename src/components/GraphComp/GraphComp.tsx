@@ -132,15 +132,21 @@ export const GraphComp: React.VFC<GraphProps> = ({
         renderGraph();
     }, [graph, renderGraph]);
 
-    useEffect(() => {
+    const clearHighlight = useCallback(() => {
         if (cyGraph.current) {
             cyGraph.current.$("node").forEach((i) => {
                 i.removeClass("red blue green");
             });
             cyGraph.current.$("edge").forEach((i) => {
                 i.removeClass("edgeHighlight");
+                i.removeClass("edgeFaded");
             });
         }
+    },[]);
+
+
+    useEffect(() => {
+        clearHighlight();
 
         if (highlightPath && cyGraph.current) {           
             cyGraph.current.$(`node[id="${highlightPath.first}"]`).addClass("red");
@@ -152,8 +158,12 @@ export const GraphComp: React.VFC<GraphProps> = ({
                     i.addClass("blue");
                 });
             }
+            cyGraph.current.$("edge").forEach((i) => {                
+                i.addClass("edgeFaded");
+            });
             cyGraph.current.$(highlightPath.edgeIds.map((i) => `edge[id="${i}"]`).join(",")).forEach((i) => {
-                i.addClass("edgeHighlight");
+                i.removeClass("edgeFaded");
+                i.addClass("edgeHighlight");                
             });
         }
     }, [highlightPath]);
@@ -164,6 +174,7 @@ export const GraphComp: React.VFC<GraphProps> = ({
             <button className={classes.button} onClick={()=>log("CLEAR")}>C</button>
             <button className={classes.button} onClick={dumpGraph}>D</button>
             <button className={classes.button} onClick={test}>T</button>
+            <button className={classes.button} onClick={clearHighlight}>H</button>
             Anzahl Knoten: {graph.nodes.length} Anzahl Kanten: {graph.edges.length}
             <div id="graphroot" className={classes.graphView} ref={graphRoot} />
         </div>
