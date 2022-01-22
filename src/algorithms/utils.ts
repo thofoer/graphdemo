@@ -14,9 +14,25 @@ const Random = (seed: string) => {
       const res = min + (max-min) * (((t ^ (t >>> 14)) >>> 0) / 4294967296);
       return max > 1 ? Math.floor(res) : res;
     }
-
 }
 
+function sample<T>(arr: T[], size?: number, rnd?: ()=>number) {
+
+    const random = rnd ?? Math.random;
+
+    const shuffled = arr.slice(0);
+    let i = arr.length, temp, index;
+
+    while (i--) {
+        index = Math.floor((i + 1) * random());
+        temp = shuffled[index];
+        shuffled[index] = shuffled[i];
+        shuffled[i] = temp;
+    }
+    return shuffled.slice(0, size ?? shuffled.length);
+}
+
+ 
 const format = new Intl.NumberFormat("de-DE");
 
 function formatNumber(s: number): string {
@@ -31,4 +47,24 @@ function formatTime(millis: number): string {
 }
 
 
-export { Random, formatNumber, formatTime };
+export { Random, sample, formatNumber, formatTime };
+
+
+declare global {
+    interface Array<T> {
+        sample(size?: number, ): T[];
+        sum(): number;
+    }    
+}
+
+// eslint-disable-next-line no-extend-native
+Array.prototype.sample = function<T>(n: number, rnd?: ()=>number)  { 
+    return sample<T>(this, n, rnd)
+}
+
+// eslint-disable-next-line no-extend-native
+Array.prototype.sum = function() {
+    return this.reduce( (a,c) => a+c);
+}
+
+  
