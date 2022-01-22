@@ -39,7 +39,7 @@ export const PathfinderComp: FC = () => {
         setRunning(false);
         log(`Es wurden ${formatNumber(allPaths.length)} unterschiedliche Pfade gefunden (Schritte: ${formatNumber(stepCount)} Zeit: ${formatTime(elapsedMillis)})`);
         setResult(allPaths);
-    }, []);
+    }, [log]);
 
     const handleCancel = () => {        
         if (cancelHandler) {            

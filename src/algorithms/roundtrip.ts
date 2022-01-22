@@ -1,4 +1,4 @@
-import { CalcResult, Graph, Path } from "../types";
+import { Graph, Path } from "../types";
 import { PathQueue, QueueStrategy } from "./queueStrategies";
 import { FRAME_MILLIS, ReportFindingCallback, ReportResultCallback, ReportStatusCallback } from '.';
 

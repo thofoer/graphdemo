@@ -1,5 +1,5 @@
 import { Graph, NodeId } from "../types";
-import { FIFOStrategy, LIFOStrategy } from './queueStrategies';
+import { FIFOStrategy } from './queueStrategies';
 
 const dfs = (graph: Graph, startNode: NodeId, visitor: (node: NodeId) => void) => {
 

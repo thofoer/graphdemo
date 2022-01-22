@@ -166,7 +166,7 @@ export const GraphComp: React.VFC<GraphProps> = ({
                 i.addClass("edgeHighlight");                
             });
         }
-    }, [highlightPath]);
+    }, [highlightPath, clearHighlight]);
 
     return (
         

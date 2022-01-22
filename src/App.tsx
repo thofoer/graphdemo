@@ -1,18 +1,8 @@
 import { GraphComp } from "./components/GraphComp/GraphComp";
-import React, { createRef, useRef, useState } from "react";
-import { Graph, Path, NodeId, GraphDef, CalcResult } from "./types";
-import {
-  Button,
-  Col,
-  Form,
-  FormGroup,
-  ListGroup,
-  ListGroupItem,
-  NavItem,
-  Row,
-} from "react-bootstrap";
+import React, { useRef, useState } from "react";
+import { Path, GraphDef } from "./types";
+import { Form, NavItem } from "react-bootstrap";
 import { useEffect } from "react";
-import { GraphDefinition } from "./components/GraphDefinition/GraphDefinition";
 import classes from "./App.module.scss";
 import { SideBar } from "./components/SideBar/SideBar";
 import "allotment/dist/style.css";
@@ -48,7 +38,7 @@ function App() {
     const body = document.querySelector("body");
     setViewHeight(body?.offsetHeight ?? 0);
     setViewWidth(body?.offsetWidth ?? 0);
-  });
+  },[]);
 
   useEffect(() => {
     const loadGraphDefs = async () => {
