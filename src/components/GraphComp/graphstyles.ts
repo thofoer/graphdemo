@@ -47,6 +47,12 @@ export const graphStyles: cytoscape.Stylesheet[] = [
         }
       },
       {
+        selector: '.edgeUnweighted',
+        style: {
+          'label': '', 
+        }
+      },
+      {
         selector: '.edgeBidirectional',
         style: {
           'target-arrow-shape': 'none'

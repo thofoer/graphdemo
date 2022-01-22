@@ -2,7 +2,15 @@ import { GraphNode, Edge, NodeId, Path, GraphDef, RandomGraphDef } from ".";
 import { Random } from "../algorithms/utils";
 import { PredefinedGraphDef } from "./GraphNode";
 
+export type Positioning = "absolute" | "geo" | "none";
 
+export type GraphProperties = {
+    name: string;
+    complete: boolean;
+    bidirectional: boolean;
+    weighted: boolean;
+    positioning: Positioning;    
+}
 
 const createRandomGraph = (def: RandomGraphDef) => {
     
@@ -29,27 +37,31 @@ const createRandomGraph = (def: RandomGraphDef) => {
         });        
     });
     
-    return new Graph(edges, false, false, "none", nodes);
+    return new Graph(
+        edges,   
+        {
+            name: def.name,
+            bidirectional: def.bidirectional || def.complete,
+            complete: def.complete,
+            weighted: true,
+            positioning: "none"
+        }, 
+        nodes);
 }
 
-export type Positioning = "absolute" | "geo" | "none";
 
 export class Graph {
     public edges: Edge[];
     public nodes: GraphNode[];    
-    public complete: boolean;
-    public bidirectional: boolean;
-    public positioning: Positioning;
+    public props: GraphProperties;
 
     private _nodeIds: NodeId[];
     private _adjacencyMap: Map<NodeId, {node: NodeId, weight: number}[]>;
     
-    constructor(edges: Edge[], complete: boolean, bidirectional: boolean, positioning: Positioning, nodes?: GraphNode[]) {
+    constructor(edges: Edge[], properties: GraphProperties, nodes?: GraphNode[]) {
         this.edges = edges;
-        this.complete = complete;
-        this.bidirectional = bidirectional;
-        this.positioning = positioning;
-
+        this.props = properties;
+        
         this._nodeIds = [...new Set(this.edges.flatMap((edge) => [edge.n1, edge.n2]))].sort();
 
         this.nodes = nodes || this._nodeIds.map((e) => GraphNode.of(e));
@@ -60,7 +72,7 @@ export class Graph {
 
         this.edges.forEach( edge => {
             this._adjacencyMap.get(edge.n1)!.push({node: edge.n2, weight: edge.weight});            
-            if (bidirectional) {                
+            if (this.props.bidirectional) {                
                 this._adjacencyMap.get(edge.n2)!.push({node: edge.n1, weight: edge.weight});
             }
         });
@@ -72,15 +84,15 @@ export class Graph {
 
     static of(def: GraphDef) {
         switch(def.type) {
-            case "edges" : return Graph.parseEdges(def.data!);
-            case "geo": return Graph.parseGeo(def.data!);
+            case "edges" : return Graph.parseEdges(def);
+            case "geo": return Graph.parseGeo(def);
             case "random": return createRandomGraph(def);
             case "adjacency-undirected": return Graph.parseAdjacency(def, true);
         }
     }
 
-    static parseGeo(s: string[]) {
-        const nodes = s.map((l) => GraphNode.parse(l));
+    static parseGeo(def: PredefinedGraphDef) {
+        const nodes = def.data.map((l) => GraphNode.parse(l));
         const edges: Edge[] = [];
 
         for (let i = 0; i < nodes.length; i++) {
@@ -89,7 +101,16 @@ export class Graph {
             }
         }
 
-        return new Graph(edges, true, true, "geo", nodes);    
+        return new Graph(
+            edges,
+            {
+                name: def.name,
+                bidirectional: true,
+                complete: true,
+                weighted: true,
+                positioning: "geo"
+            },
+            nodes);
     }
 
     static parseAdjacency(def: PredefinedGraphDef, undirected: boolean) {
@@ -98,6 +119,9 @@ export class Graph {
 
         const regex = /(.+):(?:\s+(.+,[\d.-]+))+/u;
         const nodeRegex = /(.+),(\d+)/u;
+        let weighted = false;
+        let lastWeight: string;
+
         def.data.forEach( l => {
             const matches = regex.exec(l);
             if (matches) {
@@ -107,30 +131,56 @@ export class Graph {
                     if (nodeMatches) {
                         const [,n2, weight] = nodeMatches;    
                         edges.push( new Edge(node, n2, +weight, undirected))
+                        if (!lastWeight) {
+                            lastWeight = weight;
+                        }
+                        else if (!weighted) {
+                            if (lastWeight !== weight){
+                                weighted = true;
+                            }
+                        }
                     }
                 });
             }
         });
+        let nodes: GraphNode[] | undefined = undefined;
         if (def.nodeCoordinates) {
-            const nodes: GraphNode[] = [];
+            nodes = [];
             const regex = /(.+)\[([\d-]+),([\d-]+)\]/u;
 
             def.nodeCoordinates.forEach( n => {                
                 const matches = regex.exec(n);
                 if (matches) {
                     const [, name, x, y] = matches;
-                    nodes.push( new GraphNode(name, +x, +y));
+                    nodes!.push( new GraphNode(name, +x, +y));
                 }
-            })
-            return new Graph(edges, false, true, "absolute", nodes);
+            })            
         }
-        return new Graph(edges, false, true, "none");
+        return new Graph(
+            edges,
+            {
+                name: def.name,
+                bidirectional: undirected,
+                complete: false,
+                weighted: weighted,
+                positioning: nodes ? "absolute" : "none"
+            },
+            nodes
+            );
     }
 
 
-    static parseEdges(s: string[]) {
-        const edges = s.map((l) => Edge.parse(l));
-        return new Graph(edges, false, false, "none");
+    static parseEdges(def: PredefinedGraphDef) {
+        const edges = def.data.map((l) => Edge.parse(l));
+        return new Graph(
+            edges, 
+            {
+                name: def.name,
+                bidirectional: false,
+                complete: false,
+                weighted: true,
+                positioning: "none"
+            });
     }
 
     edgeForNodes(sourceNode: NodeId, targetNode: NodeId) {

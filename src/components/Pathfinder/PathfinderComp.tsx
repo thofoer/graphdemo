@@ -53,6 +53,7 @@ export const PathfinderComp: FC = () => {
         if (graph) {
             log("-------------------Starte Pfadsuche-------------------------");
             setRunning(true);
+            setResult([]);
             const shortestPathResult = findShortestPath(graph, startNode, targetNode, strategy);            
             setResultShortestPath(shortestPathResult);
             log(`Kürzester Pfad: ${shortestPathResult.data ? shortestPathResult.data.strRep() : "keine Lösung"} (${shortestPathResult.stepCount} Schritte, Zeit: ${formatTime(shortestPathResult.timeInMillis!)})`)

@@ -5,6 +5,7 @@ import { Graph, Path } from '../../types';
 import { dfs } from '../../algorithms';
 import { graphStyles } from "./graphstyles";
 import { LogContext } from "../../App";
+import { bfs } from "../../algorithms/search";
 
 interface GraphProps {
     graph: Graph;
@@ -39,6 +40,8 @@ export const GraphComp: React.VFC<GraphProps> = ({
     const test = () => {
         log("----DFS-------------");
         dfs(graph, "A", (node: string) => log(node));
+        log("----BFS-------------");
+        bfs(graph, "A", (node: string) => log(node));
     };
 
     const clear = () => {
@@ -56,7 +59,7 @@ export const GraphComp: React.VFC<GraphProps> = ({
 
         let fx = 1;
         let fy = 1;
-        if (graph.positioning==="geo") {
+        if (graph.props.positioning==="geo") {
             fx = 120;
             fy = -200;
         }
@@ -84,7 +87,7 @@ export const GraphComp: React.VFC<GraphProps> = ({
                     target: edge.n2,
                 },
             });
-            if (edge.bidirectional && !graph.bidirectional) {
+            if (edge.bidirectional && !graph.props.bidirectional) {
                 cyGraph.current.add({
                     group: "edges",
                     data: {
@@ -97,9 +100,14 @@ export const GraphComp: React.VFC<GraphProps> = ({
             }
         }
 
-        if ( graph.bidirectional) {
+        if ( graph.props.bidirectional) {
             cyGraph.current.$("edge").forEach((i) => {
                 i.addClass("edgeBidirectional");
+            });
+        }
+        if (!graph.props.weighted) {
+            cyGraph.current.$("edge").forEach((i) => {
+                i.addClass("edgeUnweighted");
             });
         }
 

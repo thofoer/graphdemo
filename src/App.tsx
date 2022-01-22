@@ -108,7 +108,7 @@ function App() {
                       <GraphComp
                         graph={graph}
                         highlightPath={highlightPath}
-                        defaultLayout={graph.positioning === "none" ? "circle" : "preset"}
+                        defaultLayout={graph.props.positioning === "none" ? "circle" : "preset"}
                       />
                     </div>
                   ) : (

@@ -21,7 +21,7 @@ const PathfinderSettings: FC<OwnProps> = (
     const graph = useSelector(graphSelector).graph;
     const [startNode, setStartNode] = useState<string>("");
     const [targetNode, setTargetNode] = useState<string>("");
-    const [strategy, setStrategy] = useState<string>("simple");
+    const [strategy, setStrategy] = useState<string>("lifo");
 
     const handleStart = () => {
         start(startNode, targetNode, strategy as QueueStrategy);
@@ -63,7 +63,8 @@ const PathfinderSettings: FC<OwnProps> = (
                         <FormGroup as={Col} style={{minWidth: "8em", marginRight: "2em"}}>
                         <Form.Label>Queue-Strategie</Form.Label>
                         <Form.Select  onChange={(event) => setStrategy(event.target.selectedOptions[0].value)}>
-                            <option value="simple">LIFO</option>
+                            <option value="lifo">LIFO</option>
+                            <option value="fifo">FIFO</option>
                             <option value="priorityWeight">Pfad-Gewicht</option>
                             <option value="priorityLengthAndWeight">Pfad-Länge und -Gewicht</option>                    
                             </Form.Select>

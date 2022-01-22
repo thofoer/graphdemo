@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Card, Col, Form, FormGroup } from "react-bootstrap";
+import { Card, Col, Form, FormGroup, ProgressBar } from "react-bootstrap";
 import { formatNumber, formatTime } from "../../algorithms/utils";
 
 interface OwnProps {
@@ -22,12 +22,16 @@ export const StatusReportComp: FC<OwnProps> = ({
                 <Form  className="d-flex justify-content-start">
                     <FormGroup as={Col} style={{minWidth: "4em", marginRight: "2em"}}>
                     <Form.Label>Queue</Form.Label>
-                    <Form.Control                      
+
+                    {/* <Form.Control                      
                         id="queueSize"
                         as="input"
                         value={formatNumber(queueSize)}
                         readOnly
-                    />
+                    /> */}
+                    
+                    <ProgressBar now={queueSize} style={{height: "2em", fontSize: "1em"}} variant={queueSize > 100 ? "danger" : "success"} label={`${formatNumber(queueSize)}`} />
+
                     </FormGroup>
 
                     <FormGroup as={Col} style={{minWidth: "4em", marginRight: "2em"}}>
