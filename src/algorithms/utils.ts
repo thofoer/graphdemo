@@ -50,6 +50,7 @@ function formatTime(millis: number): string {
 export { Random, sample, formatNumber, formatTime };
 
 
+
 declare global {
     interface Array<T> {
         sample(size?: number, ): T[];

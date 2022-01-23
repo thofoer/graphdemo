@@ -6,6 +6,7 @@ import { dfs } from '../../algorithms';
 import { graphStyles } from "./graphstyles";
 import { LogContext } from "../../App";
 import { bfs } from "../../algorithms/search";
+import { ga } from "../../algorithms/tspga";
 
 interface GraphProps {
     graph: Graph;
@@ -38,10 +39,13 @@ export const GraphComp: React.VFC<GraphProps> = ({
     }
 
     const test = () => {
-        log("----DFS-------------");
-        dfs(graph, "A", (node: string) => log(node));
-        log("----BFS-------------");
-        bfs(graph, "A", (node: string) => log(node));
+        // log("----DFS-------------");
+        // dfs(graph, "A", (node: string) => log(node));
+        // log("----BFS-------------");
+        // bfs(graph, "A", (node: string) => log(node));
+        
+        ga(graph);
+
     };
 
     const clear = () => {

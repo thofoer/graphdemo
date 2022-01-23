@@ -233,4 +233,19 @@ export class Graph {
         }        
         return this._adjacencyMap.get(node)!.map( e => e.node);        
     }
+
+    pathForNodes(nodes: NodeId[]) {
+        let weight = 0;
+        for (let i=0; i<nodes.length-1; i++) {
+            const adj = this._adjacencyMap.get(nodes[i])?.find( a => a.node === nodes[i+1]);            
+            if (adj) {
+                weight += adj.weight;
+            }
+            else {
+                throw new Error("no such path: "+nodes.join(","));
+            }
+        }
+        return new Path(nodes, weight);
+    }
+
 }  
