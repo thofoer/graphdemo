@@ -217,6 +217,10 @@ export class Graph {
         }
     }
 
+    distanceBetween(sourceNode: NodeId, targetNode: NodeId) {
+        return this.edgeForNodes(sourceNode, targetNode)?.weight;
+    }
+
     isAdjacent(sourceNode: NodeId, targetNode: NodeId) {
         return !!this.edgeForNodes(sourceNode, targetNode);
     }
@@ -232,6 +236,24 @@ export class Graph {
             throw new Error("unknown node: "+node);
         }        
         return this._adjacencyMap.get(node)!.map( e => e.node);        
+    }
+
+    weightForClosedPath(nodes: NodeId[]){
+        let weight = 0;
+        for (let i=0; i<nodes.length-1; i++) {
+            const adj = this._adjacencyMap.get(nodes[i])?.find( a => a.node === nodes[i+1]);            
+            if (adj) {
+                weight += adj.weight;
+            }
+            else {
+                throw new Error("no such path: "+nodes.join(","));
+            }
+        }
+        const closingDistance = this.distanceBetween(nodes.first(), nodes.last());
+        if (!closingDistance) {
+            throw new Error("no closing edge found");
+        }
+        return weight + closingDistance; 
     }
 
     pathForNodes(nodes: NodeId[]) {

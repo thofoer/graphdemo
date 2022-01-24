@@ -55,17 +55,25 @@ declare global {
     interface Array<T> {
         sample(size?: number, ): T[];
         sum(): number;
+        first(): T;
+        last(): T;
     }    
 }
 
-// eslint-disable-next-line no-extend-native
+
 Array.prototype.sample = function<T>(n: number, rnd?: ()=>number)  { 
     return sample<T>(this, n, rnd)
 }
 
-// eslint-disable-next-line no-extend-native
 Array.prototype.sum = function() {
     return this.reduce( (a,c) => a+c);
 }
 
+Array.prototype.first = function() {
+    return this[0];
+}
+
+Array.prototype.last = function() {
+    return this[this.length-1];
+}
   
