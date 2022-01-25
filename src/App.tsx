@@ -1,14 +1,14 @@
 import { GraphComp } from "./components/GraphComp/GraphComp";
 import React, { useRef, useState } from "react";
 import { Path, GraphDef } from "./types";
-import { Form, NavItem } from "react-bootstrap";
+import { Button, Form, NavItem } from "react-bootstrap";
 import { useEffect } from "react";
 import classes from "./App.module.scss";
 import { SideBar } from "./components/SideBar/SideBar";
 import "allotment/dist/style.css";
 import { Allotment } from "allotment";
 import { GraphDefinitionModal } from "./components/GraphDefinition/GraphDefinitionModal";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { graphSelector } from "./store/graphSlice";
 
@@ -106,9 +106,9 @@ function App() {
                       {graphDefs && (
                         <div className="d-flex justify-content-center align-content-center mt-5 h3">
                           <NavItem>
-                            <Link to="/" onClick={() => setModalOpen(true)}>
+                            <Button onClick={() => setModalOpen(true)}>
                               Bitte Graph laden
-                            </Link>
+                            </Button>
                           </NavItem>
                         </div>
                       )}

@@ -3,11 +3,13 @@ import { Edge, NodeId } from ".";
 export class Path {
     nodes: NodeId[];
     weight: number;
+    bidirectional: boolean;
     _edgeIds: string[];
    
-    constructor(nodes: NodeId[] = [], weight: number = 0) {
+    constructor(nodes: NodeId[] = [], weight: number = 0, bidirectional: boolean = false) {
       this.nodes = nodes; 
       this.weight = weight;
+      this.bidirectional = bidirectional;
       this._edgeIds = [];
     }
   
@@ -36,7 +38,7 @@ export class Path {
         for (let i=0; i<this.nodes.length-1; i++) {
           let n1 = this.nodes[i];
           let n2 = this.nodes[i+1];
-          if (n1>n2) {
+          if (n1>n2 && this.bidirectional) {
             [n1, n2] = [n2, n1];
           }
           this._edgeIds.push(`${n1}->${n2}`);
@@ -71,7 +73,7 @@ export class Path {
       }
       const nextNode = this.nextNodeForEdge(e);
       
-      return new Path([...this.nodes, nextNode], this.weight + e.weight);
+      return new Path([...this.nodes, nextNode], this.weight + e.weight, this.bidirectional);
     }
   
     isComplete(startNode: NodeId, targetNode: NodeId) {

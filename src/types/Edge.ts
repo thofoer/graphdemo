@@ -1,4 +1,5 @@
 import {  GraphNode } from ".";
+import { geoDistance } from "../algorithms/utils";
 import {NodeId} from "./GraphNode";
 
 export class Edge {
@@ -23,20 +24,8 @@ export class Edge {
     }
   
     static of(n1: GraphNode, n2: GraphNode) {
-      const R = 6371e3; // metres
-      const φ1 = n1.y! * Math.PI/180; // φ, λ in radians
-      const φ2 = n2.y! * Math.PI/180;
-      const Δφ = (n2.y!-n1.y!) * Math.PI/180;
-      const Δλ = (n2.x!-n1.x!) * Math.PI/180;
-  
-      const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-                Math.cos(φ1) * Math.cos(φ2) *
-                Math.sin(Δλ/2) * Math.sin(Δλ/2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  
-      const d = Math.round((R * c) / 1000); // in kilometres
-  
-      return new Edge(n1.name, n2.name, d, true);
+      const distance = geoDistance(n1.y!, n1.x!, n2.y!, n2.x!);      
+      return new Edge(n1.name, n2.name, Math.round(distance), true);
     }
   
   }

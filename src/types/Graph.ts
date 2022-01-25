@@ -14,8 +14,34 @@ export type GraphProperties = {
 
 const createRandomGraph = (def: RandomGraphDef) => {
     
+    const random = Random(def.name);
+
     const NODE_NAMES = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwx";
 
+    const nodes: GraphNode[] = Array(def.nodeCount).fill(null).map( (_,i) => new GraphNode(NODE_NAMES.at(i)!, random(1, 3000), random(1, 3000)));
+    const edges: Edge[] = [];
+
+
+
+    if (def.complete) {
+        for (let i = 0; i < nodes.length; i++) {
+            for (let j = i + 1; j < nodes.length; j++) {
+                edges.push(new Edge(NODE_NAMES.charAt(i), NODE_NAMES.charAt(j), random(1, 100), true));
+            }
+        }
+        return new Graph(
+            edges,   
+            {
+                name: def.name,
+                bidirectional: true,
+                complete: true,
+                weighted: true,
+                positioning: "absolute"
+            }, 
+            nodes);
+    }
+
+    /*
     const nodes: GraphNode[] = Array(def.nodeCount).fill(null).map( (_,i) => new GraphNode(NODE_NAMES.at(i)!));
     const edges: Edge[] = [];
 
@@ -38,7 +64,7 @@ const createRandomGraph = (def: RandomGraphDef) => {
             }, 
             nodes);
     }
-
+*/
 
     nodes.forEach( node => {
         const edgeNodes: string[] = [];

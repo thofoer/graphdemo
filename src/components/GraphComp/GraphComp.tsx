@@ -82,16 +82,21 @@ export const GraphComp: React.VFC<GraphProps> = ({
             });
         }
         for (let edge of graph.edges) {
+            let source = edge.n1;
+            let target = edge.n2; 
+            if (graph.props.bidirectional && source>target)  {
+                [source, target] = [target, source];
+            }
             cyGraph.current.add({
                 group: "edges",
                 data: {
-                    id: `${edge.n1}->${edge.n2}`,
+                    id: `${source}->${target}`,
                     weight: edge.weight,
-                    source: edge.n1,
-                    target: edge.n2,
+                    source: source,
+                    target: target,
                 },
             });
-            if (edge.bidirectional && !graph.props.bidirectional) {
+            if (edge.bidirectional && !graph.props.bidirectional) {                
                 cyGraph.current.add({
                     group: "edges",
                     data: {

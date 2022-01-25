@@ -16,8 +16,9 @@ const findAllPaths = (
 
     let cancelled = false;
     let stepCount = 0;
-
-    paths.enqueue(Path.of(startNode));
+    const path = Path.of(startNode);
+    path.bidirectional = graph.props.bidirectional;
+    paths.enqueue(path);
 
     const startTime = Date.now();
     let lastFrame = startTime;    

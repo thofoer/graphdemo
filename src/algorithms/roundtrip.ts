@@ -14,8 +14,9 @@ const findShortestRoundtrip = (
   let cancelled = false;
 
   const queue = PathQueue.of(queueStrategy);
-
-  queue.enqueue(Path.of(graph.nodeIds[0]));
+  const path = Path.of(graph.nodeIds[0]);
+  path.bidirectional = graph.props.bidirectional;
+  queue.enqueue(path);
   const nodeCount = graph.nodeIds.length;
 
   const startTime = Date.now();

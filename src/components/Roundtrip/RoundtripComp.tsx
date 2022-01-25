@@ -5,7 +5,7 @@ import { QueueStrategy } from "../../algorithms/queueStrategies";
 import { graphSelector } from "../../store/graphSlice";
 import { StatusReportComp } from "../StatusReportComp/StatusReportComp";
 import { PathList } from "../PathList/PathList";
-import { LogContext } from "../../App";
+import { HighlightContext, LogContext } from "../../App";
 import { formatNumber, formatTime } from "../../algorithms/utils";
 import { Card } from "react-bootstrap";
 import { Path } from "../../types";
@@ -27,8 +27,8 @@ export const RoundtripComp: FC = () => {
     const [result, setResult] = useState<Path|null>();
     const [paths, setPaths] = useState<Path[]>([]);
 
-
     const log = useContext(LogContext);
+    const highlight = useContext(HighlightContext);
 
     const handleReportStatus = (stepCount: number, queueSize: number, elapsedMillis: number) => {
         setQueueSize(()=>queueSize);
@@ -40,7 +40,8 @@ export const RoundtripComp: FC = () => {
         log(`Neue Rundreise gefunden: ${finding.strRep()}`);
         setResult(finding);
         setPaths( old => [...old, finding] );
-    },[log]);
+        highlight(finding);
+    },[log, highlight]);
 
     const handleReportResult = useCallback( (result: Path|null, stepCount: number, elapsedMillis: number) => {        
         setRunning(false);
