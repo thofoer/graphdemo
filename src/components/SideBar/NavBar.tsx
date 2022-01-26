@@ -2,11 +2,8 @@ import { NavItem } from "./NavItem";
 import { Link } from "react-router-dom";
 import { FC } from "react";
 
-interface OwnProps {  
-  setGraphDefModalOpen: (b: boolean) => void;
-}
 
-export const NavBar: FC<OwnProps> = ({setGraphDefModalOpen}) => {
+export const NavBar: FC = () => {
 
     return (
         <div className="d-flex justify-content-start mt-3">
@@ -17,7 +14,7 @@ export const NavBar: FC<OwnProps> = ({setGraphDefModalOpen}) => {
              <Link to="/roundtrip">Rundreise</Link>
           </NavItem>
           <NavItem>
-             <Link to="/"  onClick={()=>setGraphDefModalOpen(true)}>Graph laden</Link>
+             <Link to="/tspga">TSP GA</Link>
           </NavItem>
         </div>
     );

@@ -13,6 +13,10 @@ export class Path {
       this._edgeIds = [];
     }
   
+    static copy(p: Path) {
+      return new Path([...p.nodes], p.weight, p.bidirectional);
+    }
+
     static of(n: NodeId) {
       return new Path([n], 0);
     }

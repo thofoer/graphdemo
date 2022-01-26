@@ -5,23 +5,24 @@ import { NavBar } from './NavBar';
 import { FC } from "react";
 import { PathfinderComp } from "../Pathfinder/PathfinderComp";
 import { RoundtripComp } from "../Roundtrip/RoundtripComp";
+import { TspGeneticAlgorithmComp } from "../TspGeneticAlgorithm/TspGeneticAlgorithmComp";
  
-interface OwnProps {  
-  setGraphDefModalOpen: (b: boolean) => void;
-}
 
-export const SideBar: FC<OwnProps> = ({setGraphDefModalOpen}) => {
+
+export const SideBar: FC = () => {
 
     return (
         <div className={classes.nav}>
-          <NavBar setGraphDefModalOpen={setGraphDefModalOpen}/>
+          <NavBar />
           <Route path="/pathfinder">            
             <PathfinderComp/>
           </Route>
           <Route path="/roundtrip">
             <RoundtripComp/>
           </Route>
-          
+          <Route path="/tspga">
+            <TspGeneticAlgorithmComp/>
+          </Route>
         </div>
     );
 };

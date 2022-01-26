@@ -39,7 +39,7 @@ export const RoundtripComp: FC = () => {
     const handleReportFinding = useCallback( (finding: Path) => {        
         log(`Neue Rundreise gefunden: ${finding.strRep()}`);
         setResult(finding);
-        setPaths( old => [...old, finding] );
+        setPaths( old => [finding, ...old] );
         highlight(finding);
     },[log, highlight]);
 

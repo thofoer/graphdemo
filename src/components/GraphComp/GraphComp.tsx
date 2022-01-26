@@ -12,12 +12,14 @@ interface GraphProps {
     graph: Graph;
     highlightPath: Path | null;
     defaultLayout?: string;    
-}
+    setGraphDefModalOpen: () => void;
+}  
 
 export const GraphComp: React.VFC<GraphProps> = ({
     graph,
     highlightPath,
     defaultLayout = "circle",    
+    setGraphDefModalOpen
 }) => { 
     const graphRoot = useRef<HTMLDivElement>(null);
     const cyGraph = useRef<cytoscape.Core>();
@@ -44,7 +46,7 @@ export const GraphComp: React.VFC<GraphProps> = ({
         // log("----BFS-------------");
         // bfs(graph, "A", (node: string) => log(node));
         
-        ga(graph);
+      //  ga(graph);
 
     };
 
@@ -180,6 +182,7 @@ export const GraphComp: React.VFC<GraphProps> = ({
     return (
         
         <div className={classes.graphViewWrapper}>
+            <button className={classes.button} onClick={setGraphDefModalOpen}>G</button>
             <button className={classes.button} onClick={()=>log("CLEAR")}>C</button>
             <button className={classes.button} onClick={dumpGraph}>D</button>
             <button className={classes.button} onClick={test}>T</button>

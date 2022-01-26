@@ -18,7 +18,7 @@ const createRandomGraph = (def: RandomGraphDef) => {
 
     const NODE_NAMES = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwx";
 
-    const nodes: GraphNode[] = Array(def.nodeCount).fill(null).map( (_,i) => new GraphNode(NODE_NAMES.at(i)!, random(1, 3000), random(1, 3000)));
+    const nodes: GraphNode[] = Array(def.nodeCount).fill(null).map( (_,i) => new GraphNode(NODE_NAMES.at(i)!, random(1, 1000), random(1, 1000)));
     const edges: Edge[] = [];
 
 
@@ -26,7 +26,10 @@ const createRandomGraph = (def: RandomGraphDef) => {
     if (def.complete) {
         for (let i = 0; i < nodes.length; i++) {
             for (let j = i + 1; j < nodes.length; j++) {
-                edges.push(new Edge(NODE_NAMES.charAt(i), NODE_NAMES.charAt(j), random(1, 100), true));
+                const n1 = nodes[i];
+                const n2 = nodes[j];
+                const dist = Math.round(Math.sqrt((n1.x!-n2.x!)**2 + (n1.y!-n2.y!)**2));
+                edges.push(new Edge(NODE_NAMES.charAt(i), NODE_NAMES.charAt(j), dist, true));
             }
         }
         return new Graph(

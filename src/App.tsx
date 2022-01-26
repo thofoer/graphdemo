@@ -84,7 +84,7 @@ function App() {
           <Allotment defaultSizes={[viewWidth * 0.3, viewWidth * 0.7]}>
             <Allotment.Pane minSize={200}>
               <div className={classes.App}>
-                <SideBar setGraphDefModalOpen={() => setModalOpen(true)} />
+                <SideBar />
               </div>
             </Allotment.Pane>
             <Allotment.Pane snap>
@@ -99,6 +99,7 @@ function App() {
                         graph={graph}
                         highlightPath={highlightPath}
                         defaultLayout={graph.props.positioning === "none" ? "circle" : "preset"}
+                        setGraphDefModalOpen={() => setModalOpen(true)}
                       />
                     </div>
                   ) : (
