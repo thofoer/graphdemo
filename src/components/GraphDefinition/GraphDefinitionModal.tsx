@@ -1,7 +1,7 @@
 import { Button, Modal } from "react-bootstrap";
 import { useDispatch } from "react-redux";
-import { Graph, GraphDef } from '../../types';
-import { setGraph } from '../../store/graphSlice';
+import { Graph, GraphDef, GraphObject } from '../../types';
+import { setGraphObject } from '../../store/graphObjectSlice';
 import {GraphDefinition } from './GraphDefinition';
 
 interface OwnProps {  
@@ -16,8 +16,9 @@ export const GraphDefinitionModal: React.FunctionComponent<OwnProps> = (
 
   const dispatch = useDispatch();
 
-  const handleSetGraph = (graph: Graph) => {
-    dispatch(setGraph(graph));
+  const handleSetGraph = (graphObject: GraphObject) => {
+    const x = dispatch(setGraphObject(graphObject));
+    console.dir(x);
     hideModal();
   }
 

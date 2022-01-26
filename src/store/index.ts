@@ -1,9 +1,9 @@
 import { configureStore, combineReducers, getDefaultMiddleware } from "@reduxjs/toolkit";
 
-import graphSlice from "./graphSlice";
+import graphObjectSlice from "./graphObjectSlice";
 
 export const rootReducer = combineReducers({
-    graphSlice,
+    graphObjectSlice,
 
 });
 

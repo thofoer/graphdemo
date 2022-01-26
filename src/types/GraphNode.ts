@@ -17,7 +17,13 @@ export type RandomGraphDef = {
   bidirectional: boolean;
 }
 
-export type GraphDef = PredefinedGraphDef | RandomGraphDef;
+export type MazeDef = {
+  name: string;
+  type: "maze-simple";
+  data: string[];    
+}
+
+export type GraphDef = PredefinedGraphDef | RandomGraphDef | MazeDef; 
 
 export class GraphNode {
   

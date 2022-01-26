@@ -1,4 +1,4 @@
-import { Graph, GraphDef, RandomGraphDef } from "../../types";
+import { Graph, GraphDef, GraphObject, Maze, MazeDef, RandomGraphDef } from "../../types";
 import {
   Button,
   Col,
@@ -11,17 +11,18 @@ import {
 } from "react-bootstrap";
 import { useState } from "react";
 import FormRange from "react-bootstrap/esm/FormRange";
+import { PredefinedGraphDef } from "../../types/GraphNode";
 
 interface GraphDefinitionProps {
   graphDefs: GraphDef[];
-  onSetGraph: (graph: Graph) => void;
+  onSetGraph: (graph: GraphObject) => void;
 }
 
 export const GraphDefinition: React.VFC<GraphDefinitionProps> = ({
   graphDefs,
   onSetGraph,
 }) => {
-  const [selectedGraph, setSelectedGraph] = useState<Graph>();
+  const [selectedGraph, setSelectedGraph] = useState<GraphObject>();
   const [loadButtonDisabled, setLoadButtonDisabled] = useState<boolean>(true);
   const [showRandomGraphConfig, setShowRandomGraphConfig] = useState<boolean>(false);
   const [nodeCount, setNodeCount] = useState<number>(10);
@@ -61,7 +62,12 @@ export const GraphDefinition: React.VFC<GraphDefinitionProps> = ({
       default:
         setLoadButtonDisabled(false);
         setShowRandomGraphConfig(false);
-        setSelectedGraph(Graph.of(graphDefs[selected.index - 2]));
+        if (graphDefs[selected.index - 2].type === "maze-simple") {
+          setSelectedGraph(Maze.of(graphDefs[selected.index - 2] as MazeDef));
+        }
+        else {
+          setSelectedGraph(Graph.of(graphDefs[selected.index - 2] as PredefinedGraphDef));
+        }
         
         break;
     }

@@ -1,7 +1,7 @@
 import { FC, useCallback, useContext, useState } from "react";
 import { useSelector } from "react-redux";
-import { graphSelector } from "../../store/graphSlice";
-import {  Path } from "../../types";
+import { graphSelector } from "../../store/graphObjectSlice";
+import {  Graph, GraphObject, Path } from "../../types";
 import { GaStatusReportComp } from "../StatusReportComp/GaStatusReportComp";
 import { PathList } from "../PathList/PathList";
 import { HighlightContext, LogContext } from "../../App";
@@ -33,12 +33,12 @@ export const TspGeneticAlgorithmComp: FC = () => {
     const [generation, setGeneration] = useState<number>(0);
     const [elapsedMillis, setElapsedMillis] = useState<number>(0);
 
-    const graph = useSelector(graphSelector).graph;
+    const graph: GraphObject|null = useSelector(graphSelector).graphObject;
 
 
 
     const start = (popSize: number, mutationChance: number, mutationGrade: number, crossoverChance: number, stagnationMax: number) => {
-        if (graph) {
+        if (graph && graph instanceof Graph) {
             setResult([]);
             setMaxGen(()=>stagnationMax);
             setGeneration(()=>0);

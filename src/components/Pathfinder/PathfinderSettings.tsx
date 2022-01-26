@@ -2,7 +2,8 @@ import React, { FC, useState } from "react";
 import { Button, Card, Col, Form, FormGroup } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { QueueStrategy } from "../../algorithms/queueStrategies";
-import { graphSelector } from "../../store/graphSlice";
+import { graphSelector } from "../../store/graphObjectSlice";
+import { Graph } from "../../types";
 
 interface OwnProps {
     isRunning: boolean;
@@ -18,7 +19,7 @@ const PathfinderSettings: FC<OwnProps> = (
     }
 ) => {
     
-    const graph = useSelector(graphSelector).graph;
+    const graph = useSelector(graphSelector).graphObject;
     const [startNode, setStartNode] = useState<string>("");
     const [targetNode, setTargetNode] = useState<string>("");
     const [strategy, setStrategy] = useState<string>("lifo");
@@ -35,7 +36,7 @@ const PathfinderSettings: FC<OwnProps> = (
 
     return (
         <>        
-        { graph &&
+        { graph && graph instanceof Graph &&
             <Card className="m-3">
                 <Card.Header>Pfadsuche</Card.Header>
                 <Card.Body>

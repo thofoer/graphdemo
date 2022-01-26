@@ -2,7 +2,7 @@ import React, { FC, useState } from "react";
 import { Button, Card, Col, Form, FormGroup } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { QueueStrategy } from "../../algorithms/queueStrategies";
-import { graphSelector } from "../../store/graphSlice";
+import { graphSelector } from "../../store/graphObjectSlice";
 
 interface OwnProps {
     isRunning: boolean;
@@ -18,7 +18,7 @@ const RoundtripSettings: FC<OwnProps> = (
     }
 ) => {
     
-    const graph = useSelector(graphSelector).graph;
+    const graph = useSelector(graphSelector).graphObject;
 
     const [strategy, setStrategy] = useState<string>("lifo");
 

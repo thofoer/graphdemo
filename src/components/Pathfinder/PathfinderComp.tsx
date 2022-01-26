@@ -2,8 +2,8 @@ import { FC, useCallback, useContext, useState } from "react";
 import { useSelector } from "react-redux";
 import { findAllPaths, findShortestPath } from "../../algorithms/findPaths";
 import { QueueStrategy } from "../../algorithms/queueStrategies";
-import { graphSelector } from "../../store/graphSlice";
-import { CalcResult, Path } from "../../types";
+import { graphSelector } from "../../store/graphObjectSlice";
+import { CalcResult, Graph, Path } from "../../types";
 import  PathfinderSettings from "./PathfinderSettings";
 import { StatusReportComp } from "../StatusReportComp/StatusReportComp";
 import { PathList } from "../PathList/PathList";
@@ -15,7 +15,7 @@ import { Card } from "react-bootstrap";
 
 export const PathfinderComp: FC = () => {
     
-    const graph = useSelector(graphSelector).graph;
+    const graph = useSelector(graphSelector).graphObject;
 
     const [isRunning, setRunning] = useState(false);
     const [cancelHandler, setCancelHandler] = useState<()=>void>();
@@ -50,7 +50,7 @@ export const PathfinderComp: FC = () => {
     }
 
     const start = useCallback((startNode: string, targetNode: string, strategy: QueueStrategy) => {
-        if (graph) {
+        if (graph && graph instanceof Graph) {
             log("-------------------Starte Pfadsuche-------------------------");
             setRunning(true);
             setResult([]);

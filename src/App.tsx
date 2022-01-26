@@ -1,6 +1,6 @@
 import { GraphComp } from "./components/GraphComp/GraphComp";
 import React, { useRef, useState } from "react";
-import { Path, GraphDef } from "./types";
+import { Path, GraphDef, Graph } from "./types";
 import { Button, Form, NavItem } from "react-bootstrap";
 import { useEffect } from "react";
 import classes from "./App.module.scss";
@@ -8,9 +8,8 @@ import { SideBar } from "./components/SideBar/SideBar";
 import "allotment/dist/style.css";
 import { Allotment } from "allotment";
 import { GraphDefinitionModal } from "./components/GraphDefinition/GraphDefinitionModal";
-import { Link, NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { graphSelector } from "./store/graphSlice";
+import { graphSelector } from "./store/graphObjectSlice";
 
 export const LogContext = React.createContext<(s: string) => void>(() => {});
 export const HighlightContext = React.createContext<(p: Path | null) => void>(
@@ -18,7 +17,7 @@ export const HighlightContext = React.createContext<(p: Path | null) => void>(
 );
 
 function App() {
-  const graph = useSelector(graphSelector).graph;
+  const graph = useSelector(graphSelector).graphObject;
 
   const [viewWidth, setViewWidth] = useState(
     document.querySelector("body")?.offsetWidth ?? 1800
@@ -93,7 +92,8 @@ function App() {
                 defaultSizes={[viewHeight * 0.7, viewHeight * 0.3]}
               >
                 <Allotment.Pane>
-                  {graph ? (
+                  {console.log("=====>"+graph)}
+                  {graph && graph instanceof Graph ? (
                     <div>
                       <GraphComp
                         graph={graph}

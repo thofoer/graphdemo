@@ -129,7 +129,7 @@ export class Graph {
         return this._nodeIds;
     }
 
-    static of(def: GraphDef) {
+    static of(def: PredefinedGraphDef | RandomGraphDef) {
         switch(def.type) {
             case "edges" : return Graph.parseEdges(def);
             case "geo": return Graph.parseGeo(def);
