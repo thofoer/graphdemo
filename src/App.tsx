@@ -1,6 +1,6 @@
 import { GraphComp } from "./components/GraphComp/GraphComp";
 import React, { useRef, useState } from "react";
-import { Path, GraphDef, Graph } from "./types";
+import { Path, GraphDef, Graph, Maze } from "./types";
 import { Button, Form, NavItem } from "react-bootstrap";
 import { useEffect } from "react";
 import classes from "./App.module.scss";
@@ -102,7 +102,12 @@ function App() {
                         setGraphDefModalOpen={() => setModalOpen(true)}
                       />
                     </div>
-                  ) : (
+                  ) : 
+                  graph && graph instanceof Maze ? (
+                    <div>Maze</div>
+                  )
+                  :
+                  (
                     <>
                       {graphDefs && (
                         <div className="d-flex justify-content-center align-content-center mt-5 h3">
