@@ -1,8 +1,6 @@
 import { FC, useCallback, useContext, useState } from "react";
-import { useSelector } from "react-redux";
 import { findAllPaths, findShortestPath } from "../../algorithms/findPaths";
 import { QueueStrategy } from "../../algorithms/queueStrategies";
-import { graphSelector } from "../../store/graphObjectSlice";
 import { CalcResult, Graph, Path } from "../../types";
 import  PathfinderSettings from "./PathfinderSettings";
 import { StatusReportComp } from "../StatusReportComp/StatusReportComp";
@@ -15,8 +13,6 @@ import { Card } from "react-bootstrap";
 
 export const PathfinderComp: FC = () => {
     
-    const graph = useSelector(graphSelector).graphObject;
-
     const [isRunning, setRunning] = useState(false);
     const [cancelHandler, setCancelHandler] = useState<()=>void>();
 
@@ -49,18 +45,19 @@ export const PathfinderComp: FC = () => {
         }
     }
 
-    const start = useCallback((startNode: string, targetNode: string, strategy: QueueStrategy) => {
-        if (graph && graph instanceof Graph) {
-            log("-------------------Starte Pfadsuche-------------------------");
-            setRunning(true);
-            setResult([]);
-            const shortestPathResult = findShortestPath(graph, startNode, targetNode, strategy);            
-            setResultShortestPath(shortestPathResult);
-            log(`Kürzester Pfad: ${shortestPathResult.data ? shortestPathResult.data.strRep() : "keine Lösung"} (${shortestPathResult.stepCount} Schritte, Zeit: ${formatTime(shortestPathResult.timeInMillis!)})`)
-            const ch = findAllPaths(graph, startNode, targetNode, strategy, handleReportStatus, handleReportResult);            
-            setCancelHandler(() => ch);                      
-        }
-    }, [graph, handleReportResult, log]);
+
+    const start = useCallback((graph: Graph, startNode: string, targetNode: string, strategy: QueueStrategy) => {        
+        
+        log("-------------------Starte Pfadsuche-------------------------");
+        setRunning(true);
+        setResult([]);
+        const shortestPathResult = findShortestPath(graph, startNode, targetNode, strategy);            
+        setResultShortestPath(shortestPathResult);
+        log(`Kürzester Pfad: ${shortestPathResult.data ? shortestPathResult.data.strRep() : "keine Lösung"} (${shortestPathResult.stepCount} Schritte, Zeit: ${formatTime(shortestPathResult.timeInMillis!)})`)
+        const ch = findAllPaths(graph, startNode, targetNode, strategy, handleReportStatus, handleReportResult);            
+        setCancelHandler(() => ch);                      
+    
+    }, [ handleReportResult, log]);
         
     return (
         <>

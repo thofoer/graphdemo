@@ -7,7 +7,7 @@ import { Graph } from "../../types";
 
 interface OwnProps {
     isRunning: boolean;
-    start: (startNode: string, targetNode: string, strategy: QueueStrategy) => void;
+    start: (graph: Graph, startNode: string, targetNode: string, strategy: QueueStrategy) => void;
     cancel: () => void;
 }
 
@@ -25,7 +25,9 @@ const PathfinderSettings: FC<OwnProps> = (
     const [strategy, setStrategy] = useState<string>("lifo");
 
     const handleStart = () => {
-        start(startNode, targetNode, strategy as QueueStrategy);
+        if (graph && graph instanceof Graph) {
+            start(graph, startNode, targetNode, strategy as QueueStrategy);
+        }
     }
 
     const isStartable = () => {

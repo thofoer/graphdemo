@@ -1,17 +1,19 @@
 import React, { FC, useState } from "react";
 import { Button, Card, Col, FormControl, FormGroup, FormLabel, Row } from "react-bootstrap";
 import FormRange from "react-bootstrap/esm/FormRange";
+import { useSelector } from "react-redux";
+import { graphSelector } from "../../store/graphObjectSlice";
+import { Graph } from "../../types";
 
 interface OwnProps {
     isRunning: boolean;
-    start: (popSize: number, mutationChance: number, mutationGrade: number, crossoverChance: number, stagnationMax: number) => void;
+    start: (graph: Graph, popSize: number, mutationChance: number, mutationGrade: number, crossoverChance: number, stagnationMax: number) => void;
     cancel: () => void;
     onChangePopSize: (popSize: number) => void;
     onChangeStagnationMax: (popSize: number) => void;
     onChangeMutationChance: (popSize: number) => void;
     onChangeMutationGrade: (popSize: number) => void;
     onChangeCrossoverChance: (popSize: number) => void;
-
 }
 
 const TspGaSettings: FC<OwnProps> = (
@@ -27,6 +29,8 @@ const TspGaSettings: FC<OwnProps> = (
     }
 ) => {
         
+    const graph = useSelector(graphSelector).graphObject;
+
     const [popSize, setPopSize] = useState<number>(50);
     const [stagnationMax, setStagnationMax] = useState<number>(100000);
     const [mutationChance, setMutationChance] = useState<number>(0.1);
@@ -34,7 +38,9 @@ const TspGaSettings: FC<OwnProps> = (
     const [crossoverChance, setCrossoverChance] = useState<number>(0.5);
 
     const handleStart = () => {
-        start(popSize, mutationChance, mutationGrade, crossoverChance, stagnationMax);
+        if (graph && graph instanceof Graph) {
+            start(graph, popSize, mutationChance, mutationGrade, crossoverChance, stagnationMax);
+        }
     }
 
 

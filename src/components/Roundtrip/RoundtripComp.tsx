@@ -1,8 +1,6 @@
 import { FC, useCallback, useContext, useState } from "react";
-import { useSelector } from "react-redux";
 import { findShortestRoundtrip } from "../../algorithms/roundtrip";
 import { QueueStrategy } from "../../algorithms/queueStrategies";
-import { graphSelector } from "../../store/graphObjectSlice";
 import { StatusReportComp } from "../StatusReportComp/StatusReportComp";
 import { PathList } from "../PathList/PathList";
 import { HighlightContext, LogContext } from "../../App";
@@ -14,8 +12,6 @@ import RoundtripSettings from "./RoundtripSettings";
 
 
 export const RoundtripComp: FC = () => {
-
-    const graph = useSelector(graphSelector).graphObject;
 
     const [isRunning, setRunning] = useState(false);
     const [cancelHandler, setCancelHandler] = useState<()=>void>();
@@ -57,16 +53,16 @@ export const RoundtripComp: FC = () => {
         }
     }
 
-    const start = useCallback((strategy: QueueStrategy) => {
-        if (graph && graph instanceof Graph) {
-            setResult(null);
-            setPaths([]);
-            log("-------------------Starte TSP-------------------------");
-            setRunning(true);                        
-            const ch = findShortestRoundtrip(graph, strategy, handleReportStatus, handleReportResult, handleReportFinding);            
-            setCancelHandler(() => ch);                      
-        }
-    }, [graph, handleReportResult, handleReportFinding, log]);
+    const start = useCallback((graph: Graph, strategy: QueueStrategy) => {
+       
+        setResult(null);
+        setPaths([]);
+        log("-------------------Starte TSP-------------------------");
+        setRunning(true);                        
+        const ch = findShortestRoundtrip(graph, strategy, handleReportStatus, handleReportResult, handleReportFinding);            
+        setCancelHandler(() => ch);                      
+    
+    }, [handleReportResult, handleReportFinding, log]);
 
 
     return (

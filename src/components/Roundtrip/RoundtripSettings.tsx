@@ -3,10 +3,11 @@ import { Button, Card, Col, Form, FormGroup } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { QueueStrategy } from "../../algorithms/queueStrategies";
 import { graphSelector } from "../../store/graphObjectSlice";
+import { Graph } from "../../types";
 
 interface OwnProps {
     isRunning: boolean;
-    start: (strategy: QueueStrategy) => void;
+    start: (graph: Graph, strategy: QueueStrategy) => void;
     cancel: () => void;
 }
 
@@ -23,7 +24,9 @@ const RoundtripSettings: FC<OwnProps> = (
     const [strategy, setStrategy] = useState<string>("lifo");
 
     const handleStart = () => {
-        start(strategy as QueueStrategy);
+        if (graph && graph instanceof Graph) {
+            start(graph, strategy as QueueStrategy);
+        }
     }
 
     const isStartable = () => {

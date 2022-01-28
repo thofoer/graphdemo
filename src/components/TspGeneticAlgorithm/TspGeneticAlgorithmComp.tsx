@@ -1,7 +1,5 @@
 import { FC, useCallback, useContext, useState } from "react";
-import { useSelector } from "react-redux";
-import { graphSelector } from "../../store/graphObjectSlice";
-import {  Graph, GraphObject, Path } from "../../types";
+import { Graph, Path } from "../../types";
 import { GaStatusReportComp } from "../StatusReportComp/GaStatusReportComp";
 import { PathList } from "../PathList/PathList";
 import { HighlightContext, LogContext } from "../../App";
@@ -11,8 +9,6 @@ import { ga } from "../../algorithms/tspga";
 
 
 export const TspGeneticAlgorithmComp: FC = () => {
-
-    
 
     const [isRunning, setRunning] = useState(false);
     const [cancelHandler, setCancelHandler] = useState<()=>void>();
@@ -33,35 +29,31 @@ export const TspGeneticAlgorithmComp: FC = () => {
     const [generation, setGeneration] = useState<number>(0);
     const [elapsedMillis, setElapsedMillis] = useState<number>(0);
 
-    const graph: GraphObject|null = useSelector(graphSelector).graphObject;
-
-
-
-    const start = (popSize: number, mutationChance: number, mutationGrade: number, crossoverChance: number, stagnationMax: number) => {
-        if (graph && graph instanceof Graph) {
-            setResult([]);
-            setMaxGen(()=>stagnationMax);
-            setGeneration(()=>0);
-            setLastFindingGen(()=>0);
-           const callbacks =  ga(graph, popSize, stagnationMax, mutationChance, mutationGrade, crossoverChance, handleReportStatus, handleReportFinding);
-           const {
-                cancel,        
-                setPopsize,    
-                setMutationChance,    
-                setMutationGrade,
-                setCrossoverChance,
-                setStagnationMax 
-            } = callbacks;
-            
-            setCancelHandler(()=>cancel);
-            console.log("set popsizehandler", setPopsize);
-            setPopSizeHandler(()=>setPopsize);
-            setMutationChanceHandler(()=>setMutationChance);
-            setMutationGradeHandler(()=>setMutationGrade);
-            setCrossoverChanceHandler(()=>setCrossoverChance);
-            setStagnationMaxHandler(()=>setStagnationMax);
-            setRunning(true);
-        }
+    const start = (graph: Graph, popSize: number, mutationChance: number, mutationGrade: number, crossoverChance: number, stagnationMax: number) => {
+        
+        setResult([]);
+        setMaxGen(()=>stagnationMax);
+        setGeneration(()=>0);
+        setLastFindingGen(()=>0);
+        const callbacks =  ga(graph, popSize, stagnationMax, mutationChance, mutationGrade, crossoverChance, handleReportStatus, handleReportFinding);
+        const {
+            cancel,        
+            setPopsize,    
+            setMutationChance,    
+            setMutationGrade,
+            setCrossoverChance,
+            setStagnationMax 
+        } = callbacks;
+        
+        setCancelHandler(()=>cancel);
+        console.log("set popsizehandler", setPopsize);
+        setPopSizeHandler(()=>setPopsize);
+        setMutationChanceHandler(()=>setMutationChance);
+        setMutationGradeHandler(()=>setMutationGrade);
+        setCrossoverChanceHandler(()=>setCrossoverChance);
+        setStagnationMaxHandler(()=>setStagnationMax);
+        setRunning(true);
+    
     }
 
     const handleReportFinding = useCallback( (finding: Path, genNumber: number) => {       

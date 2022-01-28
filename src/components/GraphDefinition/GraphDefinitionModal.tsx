@@ -1,6 +1,6 @@
 import { Button, Modal } from "react-bootstrap";
 import { useDispatch } from "react-redux";
-import { Graph, GraphDef, GraphObject } from '../../types';
+import { GraphDef, GraphObject } from '../../types';
 import { setGraphObject } from '../../store/graphObjectSlice';
 import {GraphDefinition } from './GraphDefinition';
 
