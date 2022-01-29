@@ -10,6 +10,7 @@ import { Allotment } from "allotment";
 import { GraphDefinitionModal } from "./components/GraphDefinition/GraphDefinitionModal";
 import { useSelector } from "react-redux";
 import { graphSelector } from "./store/graphObjectSlice";
+import { MazeComp } from "./components/MazeComp/MazeComp";
 
 export const LogContext = React.createContext<(s: string) => void>(() => {});
 export const HighlightContext = React.createContext<(p: Path | null) => void>(
@@ -104,7 +105,9 @@ function App() {
                     </div>
                   ) : 
                   graph && graph instanceof Maze ? (
-                    <div>Maze</div>
+                    <div>
+                      <MazeComp maze={graph}/>
+                    </div>
                   )
                   :
                   (

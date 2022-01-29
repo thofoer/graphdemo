@@ -24,6 +24,14 @@ export class Maze {
         return this.grid.length;
     }
 
+    isFree({x,y}: Coord) {
+        return this.grid[y][x] === FREE;
+    }
+
+    get({x,y}: Coord) {
+        return this.grid[y][x];
+    }
+
 
     static of(def: MazeDef ) {
         console.log("MAZE");
@@ -43,7 +51,7 @@ export class Maze {
 
         if (startPos) {
            const res = new Maze(grid, startPos);
-           res.dump();
+           res.dump();                      
            return res;
         }
         else {
