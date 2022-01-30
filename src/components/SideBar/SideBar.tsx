@@ -6,6 +6,7 @@ import { FC } from "react";
 import { PathfinderComp } from "../Pathfinder/PathfinderComp";
 import { RoundtripComp } from "../Roundtrip/RoundtripComp";
 import { TspGeneticAlgorithmComp } from "../TspGeneticAlgorithm/TspGeneticAlgorithmComp";
+import { MazeComp } from "../Maze/MazeComp";
  
 
 
@@ -22,6 +23,9 @@ export const SideBar: FC = () => {
           </Route>
           <Route path="/tspga">
             <TspGeneticAlgorithmComp/>
+          </Route>
+          <Route path="/maze">
+            <MazeComp/>
           </Route>
         </div>
     );

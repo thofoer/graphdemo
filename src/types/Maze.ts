@@ -3,17 +3,20 @@ import { MazeDef } from ".";
 export const FREE = ".";
 export const WALL = "#";
 export const START_FIELD = "@";
+export const TARGET_FIELD = "$";
 
 export type Coord = { x: number, y: number};
 
 export class Maze {
 
     private grid: string[][];
-    private startPos: Coord;
+    public startPos: Coord;
+    public targetPos: Coord;
 
-    constructor(grid: string[][], startPos: Coord){
+    constructor(grid: string[][], startPos: Coord, targetPos: Coord){
         this.grid = grid;
         this.startPos = startPos;
+        this.targetPos = targetPos;
     }
 
     width() {
@@ -33,9 +36,9 @@ export class Maze {
     }
 
 
-    static of(def: MazeDef ) {
-        console.log("MAZE");
+    static of(def: MazeDef ) {        
         let startPos: Coord|null = null;
+        let targetPos: Coord|null = null;
         const grid:string[][] = [[]];
 
         for(let y=0; y<def.data.length; y++) {
@@ -46,16 +49,19 @@ export class Maze {
                 if (tile===START_FIELD) {
                     startPos = { x,y };                    
                 }
+                if (tile===TARGET_FIELD) {
+                    targetPos = { x,y };                    
+                }
             }
         }
 
-        if (startPos) {
-           const res = new Maze(grid, startPos);
+        if (startPos && targetPos) {
+           const res = new Maze(grid, startPos, targetPos);
            res.dump();                      
            return res;
         }
         else {
-            throw new Error("no startpos found");
+            throw new Error("no startpos / targetpos found");
         }
 
     }
