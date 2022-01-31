@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState, VFC } from "react";
+import { Button } from "react-bootstrap";
 import { Maze } from "../../types";
 import { WALL, FREE, START_FIELD } from "../../types/Maze";
 import classes from "./MazeViewComp.module.scss"; 
@@ -14,6 +15,7 @@ export const FONT_SIZE = 10;
 export const MazeViewComp: VFC<OwnProps> = ({maze}) => {
     
     const [tiles, setTiles] = useState<HTMLCollection>();
+    const [r, setR]=useState(0);
 
     const renderMaze = useCallback( () => {
         if (maze) {
@@ -64,7 +66,7 @@ export const MazeViewComp: VFC<OwnProps> = ({maze}) => {
             setTiles(dest.children);
         }
     },
-    [maze]);
+    [maze, r]);
 
     useEffect( ()=> {
         if (maze) {           
@@ -73,10 +75,15 @@ export const MazeViewComp: VFC<OwnProps> = ({maze}) => {
     }, 
     [ maze, renderMaze]);
 
+
+    const rerender = () => {
+        setR((n)=>n+1)
+    }
+
     return (
         <div className={classes.root} style={{width: `${1+TILE_SIZE*maze.width()}px`, height: `${1+TILE_SIZE*maze.height()}px`}}>Key Maze                
             <p>
-                Bla           
+                <Button onClick={rerender}>Rerender</Button>
             </p>            
             <div className="d-flex justify-content-center">
                 <div className={classes.maze} id="maze"/>
