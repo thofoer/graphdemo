@@ -5,11 +5,13 @@ import { PriorityQueueStrategy } from "./queueStrategies";
 
 const removeDeadends = (maze: Maze) => {
 
+    console.time("deadend")
     let d = maze.findDeadend();
     while(d) {
         maze.removeDeadend(d);
         d = maze.findDeadend();
     }
+    console.timeLog("deadend", "Sackgassen entfernt")
 }
 
 type Path = Coord[];

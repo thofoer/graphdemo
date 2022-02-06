@@ -62,7 +62,7 @@ export const GraphDefinition: React.VFC<GraphDefinitionProps> = ({
       default:
         setLoadButtonDisabled(false);
         setShowRandomGraphConfig(false);
-        if (graphDefs[selected.index - 2].type === "maze-simple") {
+        if (graphDefs[selected.index - 2].type.includes("maze-")) {
           setSelectedGraph(Maze.of(graphDefs[selected.index - 2] as MazeDef));
         }
         else {

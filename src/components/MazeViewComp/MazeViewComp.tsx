@@ -85,7 +85,7 @@ export const MazeViewComp: VFC<OwnProps> = ({maze}) => {
             <p>
                 <Button onClick={rerender}>Rerender</Button>
             </p>            
-            <div className="d-flex justify-content-center">
+            <div className="d-flex" style={{overflow: "scroll",width: `${1+TILE_SIZE*maze.width()}px`, height: "800px"}}>
                 <div className={classes.maze} id="maze"/>
             </div>
         </div>
